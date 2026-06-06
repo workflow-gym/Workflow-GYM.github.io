@@ -1889,6 +1889,57 @@
   </div>
 </section>
 
+<!-- Showcase package index. Previously fetched from static/manifest/all.json,
+     now inlined so the Showcase always renders even if the index file isn't
+     deployed alongside index.html (the per-package manifest.json + .webp files
+     under static/manifest/data/<id>/ are still loaded on demand). Update this
+     block whenever you add or remove a rollout under static/manifest/data/. -->
+<script type="application/json" id="showcaseIndex">
+{
+  "id": "democase_selected_new",
+  "name": "UI Showcase Collection",
+  "cover": "static/manifest/data/题目-1381-doubao2.1-sample-3/1.webp",
+  "packages": [
+    { "id": "题目-1381-doubao2.1-sample-3",                    "name": "_1381__doubao2.1__sample_3",                      "packageManifest": "static/manifest/data/题目-1381-doubao2.1-sample-3/manifest.json",                    "packageCover": "static/manifest/data/题目-1381-doubao2.1-sample-3/1.webp",                    "packageStepsCount": 214 },
+    { "id": "题目-1381-gemini3-flash-sample-1",                "name": "_1381__gemini3-flash__sample_1",                  "packageManifest": "static/manifest/data/题目-1381-gemini3-flash-sample-1/manifest.json",                "packageCover": "static/manifest/data/题目-1381-gemini3-flash-sample-1/1.webp",                "packageStepsCount": 69 },
+    { "id": "题目-1381-gemini3.1-pro-sample-1",                "name": "_1381__gemini3.1-pro__sample_1",                  "packageManifest": "static/manifest/data/题目-1381-gemini3.1-pro-sample-1/manifest.json",                "packageCover": "static/manifest/data/题目-1381-gemini3.1-pro-sample-1/1.webp",                "packageStepsCount": 207 },
+    { "id": "题目-1381-gpt5.4-sample-1",                       "name": "_1381__gpt5.4__sample_1",                         "packageManifest": "static/manifest/data/题目-1381-gpt5.4-sample-1/manifest.json",                       "packageCover": "static/manifest/data/题目-1381-gpt5.4-sample-1/1.webp",                       "packageStepsCount": 29 },
+    { "id": "题目-1381-gpt5.4-mini-sample-1",                  "name": "_1381__gpt5.4_mini__sample_1",                    "packageManifest": "static/manifest/data/题目-1381-gpt5.4-mini-sample-1/manifest.json",                  "packageCover": "static/manifest/data/题目-1381-gpt5.4-mini-sample-1/1.webp",                  "packageStepsCount": 24 },
+    { "id": "题目-1381-kimi-native-sample-3",                  "name": "_1381__kimi_native__sample_3",                    "packageManifest": "static/manifest/data/题目-1381-kimi-native-sample-3/manifest.json",                  "packageCover": "static/manifest/data/题目-1381-kimi-native-sample-3/1.webp",                  "packageStepsCount": 43 },
+    { "id": "题目-1442-doubao2.1-sample-1",                    "name": "_1442__doubao2.1__sample_1",                      "packageManifest": "static/manifest/data/题目-1442-doubao2.1-sample-1/manifest.json",                    "packageCover": "static/manifest/data/题目-1442-doubao2.1-sample-1/1.webp",                    "packageStepsCount": 351 },
+    { "id": "题目-1442-gemini3-flash-sample-1",                "name": "_1442__gemini3-flash__sample_1",                  "packageManifest": "static/manifest/data/题目-1442-gemini3-flash-sample-1/manifest.json",                "packageCover": "static/manifest/data/题目-1442-gemini3-flash-sample-1/1.webp",                "packageStepsCount": 92 },
+    { "id": "题目-1442-gemini3.1-pro-sample-1",                "name": "_1442__gemini3.1-pro__sample_1",                  "packageManifest": "static/manifest/data/题目-1442-gemini3.1-pro-sample-1/manifest.json",                "packageCover": "static/manifest/data/题目-1442-gemini3.1-pro-sample-1/1.webp",                "packageStepsCount": 154 },
+    { "id": "题目-1442-gpt5.4-sample-1",                       "name": "_1442__gpt5.4__sample_1",                         "packageManifest": "static/manifest/data/题目-1442-gpt5.4-sample-1/manifest.json",                       "packageCover": "static/manifest/data/题目-1442-gpt5.4-sample-1/1.webp",                       "packageStepsCount": 104 },
+    { "id": "题目-1442-gpt5.4-mini-sample-2",                  "name": "_1442__gpt5.4_mini__sample_2",                    "packageManifest": "static/manifest/data/题目-1442-gpt5.4-mini-sample-2/manifest.json",                  "packageCover": "static/manifest/data/题目-1442-gpt5.4-mini-sample-2/1.webp",                  "packageStepsCount": 104 },
+    { "id": "题目-1442-kimi-native-sample-1",                  "name": "_1442__kimi_native__sample_1",                    "packageManifest": "static/manifest/data/题目-1442-kimi-native-sample-1/manifest.json",                  "packageCover": "static/manifest/data/题目-1442-kimi-native-sample-1/1.webp",                  "packageStepsCount": 393 },
+    { "id": "题目-1799-doubao2.1-sample-1",                    "name": "_1799__doubao2.1__sample_1",                      "packageManifest": "static/manifest/data/题目-1799-doubao2.1-sample-1/manifest.json",                    "packageCover": "static/manifest/data/题目-1799-doubao2.1-sample-1/1.webp",                    "packageStepsCount": 186 },
+    { "id": "题目-1799-gemini3-flash-sample-1",                "name": "_1799__gemini3-flash__sample_1",                  "packageManifest": "static/manifest/data/题目-1799-gemini3-flash-sample-1/manifest.json",                "packageCover": "static/manifest/data/题目-1799-gemini3-flash-sample-1/1.webp",                "packageStepsCount": 172 },
+    { "id": "题目-1799-gemini3.1-pro-sample-1",                "name": "题目_1799__gemini3.1-pro__sample_1",              "packageManifest": "static/manifest/data/题目-1799-gemini3.1-pro-sample-1/manifest.json",                "packageCover": "static/manifest/data/题目-1799-gemini3.1-pro-sample-1/1.webp",                "packageStepsCount": 82 },
+    { "id": "题目-1799-gpt5.4-sample-1",                       "name": "题目_1799__gpt5.4__sample_1",                     "packageManifest": "static/manifest/data/题目-1799-gpt5.4-sample-1/manifest.json",                       "packageCover": "static/manifest/data/题目-1799-gpt5.4-sample-1/1.webp",                       "packageStepsCount": 21 },
+    { "id": "题目-1799-gpt5.4-mini-sample-3",                  "name": "题目_1799__gpt5.4_mini__sample_3",                "packageManifest": "static/manifest/data/题目-1799-gpt5.4-mini-sample-3/manifest.json",                  "packageCover": "static/manifest/data/题目-1799-gpt5.4-mini-sample-3/1.webp",                  "packageStepsCount": 35 },
+    { "id": "题目-1799-kimi-native-sample-3",                  "name": "题目_1799__kimi_native__sample_3",                "packageManifest": "static/manifest/data/题目-1799-kimi-native-sample-3/manifest.json",                  "packageCover": "static/manifest/data/题目-1799-kimi-native-sample-3/1.webp",                  "packageStepsCount": 75 },
+    { "id": "题目-1876-doubao2.1-sample-1",                    "name": "题目_1876__doubao2.1__sample_1",                  "packageManifest": "static/manifest/data/题目-1876-doubao2.1-sample-1/manifest.json",                    "packageCover": "static/manifest/data/题目-1876-doubao2.1-sample-1/1.webp",                    "packageStepsCount": 70 },
+    { "id": "题目-1876-gemini3-flash-sample-1",                "name": "题目_1876__gemini3-flash__sample_1",              "packageManifest": "static/manifest/data/题目-1876-gemini3-flash-sample-1/manifest.json",                "packageCover": "static/manifest/data/题目-1876-gemini3-flash-sample-1/1.webp",                "packageStepsCount": 67 },
+    { "id": "题目-1876-gemini3.1-pro-sample-2",                "name": "题目_1876__gemini3.1-pro__sample_2",              "packageManifest": "static/manifest/data/题目-1876-gemini3.1-pro-sample-2/manifest.json",                "packageCover": "static/manifest/data/题目-1876-gemini3.1-pro-sample-2/1.webp",                "packageStepsCount": 179 },
+    { "id": "题目-1876-gpt5.4-sample-1",                       "name": "题目_1876__gpt5.4__sample_1",                     "packageManifest": "static/manifest/data/题目-1876-gpt5.4-sample-1/manifest.json",                       "packageCover": "static/manifest/data/题目-1876-gpt5.4-sample-1/1.webp",                       "packageStepsCount": 6 },
+    { "id": "题目-1876-gpt5.4-mini-sample-3",                  "name": "题目_1876__gpt5.4_mini__sample_3",                "packageManifest": "static/manifest/data/题目-1876-gpt5.4-mini-sample-3/manifest.json",                  "packageCover": "static/manifest/data/题目-1876-gpt5.4-mini-sample-3/1.webp",                  "packageStepsCount": 57 },
+    { "id": "题目-1876-kimi-native-sample-1",                  "name": "题目_1876__kimi_native__sample_1",                "packageManifest": "static/manifest/data/题目-1876-kimi-native-sample-1/manifest.json",                  "packageCover": "static/manifest/data/题目-1876-kimi-native-sample-1/1.webp",                  "packageStepsCount": 93 },
+    { "id": "题目-591-doubao2.1-sample-1",                     "name": "题目_591__doubao2.1__sample_1",                   "packageManifest": "static/manifest/data/题目-591-doubao2.1-sample-1/manifest.json",                     "packageCover": "static/manifest/data/题目-591-doubao2.1-sample-1/1.webp",                     "packageStepsCount": 100 },
+    { "id": "题目-591-gemini3-flash-sample-1",                 "name": "题目_591__gemini3-flash__sample_1",               "packageManifest": "static/manifest/data/题目-591-gemini3-flash-sample-1/manifest.json",                 "packageCover": "static/manifest/data/题目-591-gemini3-flash-sample-1/1.webp",                 "packageStepsCount": 106 },
+    { "id": "题目-591-gemini3.1-pro-sample-1",                 "name": "题目_591__gemini3.1-pro__sample_1",               "packageManifest": "static/manifest/data/题目-591-gemini3.1-pro-sample-1/manifest.json",                 "packageCover": "static/manifest/data/题目-591-gemini3.1-pro-sample-1/1.webp",                 "packageStepsCount": 141 },
+    { "id": "题目-591-gpt5.4-sample-2",                        "name": "题目_591__gpt5.4__sample_2",                      "packageManifest": "static/manifest/data/题目-591-gpt5.4-sample-2/manifest.json",                        "packageCover": "static/manifest/data/题目-591-gpt5.4-sample-2/1.webp",                        "packageStepsCount": 57 },
+    { "id": "题目-591-gpt5.4-mini-sample-1",                   "name": "题目_591__gpt5.4_mini__sample_1",                 "packageManifest": "static/manifest/data/题目-591-gpt5.4-mini-sample-1/manifest.json",                   "packageCover": "static/manifest/data/题目-591-gpt5.4-mini-sample-1/1.webp",                   "packageStepsCount": 27 },
+    { "id": "题目-591-kimi-native-sample-1",                   "name": "题目_591__kimi_native__sample_1",                 "packageManifest": "static/manifest/data/题目-591-kimi-native-sample-1/manifest.json",                   "packageCover": "static/manifest/data/题目-591-kimi-native-sample-1/1.webp",                   "packageStepsCount": 107 },
+    { "id": "题目-recv8j7b-ugj-qeg-doubao2.1-sample-1",        "name": "题目_recv8J7bUgjQeg__doubao2.1__sample_1",        "packageManifest": "static/manifest/data/题目-recv8j7b-ugj-qeg-doubao2.1-sample-1/manifest.json",        "packageCover": "static/manifest/data/题目-recv8j7b-ugj-qeg-doubao2.1-sample-1/1.webp",        "packageStepsCount": 95 },
+    { "id": "题目-recv8j7b-ugj-qeg-gemini3-flash-sample-1",    "name": "题目_recv8J7bUgjQeg__gemini3-flash__sample_1",    "packageManifest": "static/manifest/data/题目-recv8j7b-ugj-qeg-gemini3-flash-sample-1/manifest.json",    "packageCover": "static/manifest/data/题目-recv8j7b-ugj-qeg-gemini3-flash-sample-1/1.webp",    "packageStepsCount": 79 },
+    { "id": "题目-recv8j7b-ugj-qeg-gemini3.1-pro-sample-1",    "name": "题目_recv8J7bUgjQeg__gemini3.1-pro__sample_1",    "packageManifest": "static/manifest/data/题目-recv8j7b-ugj-qeg-gemini3.1-pro-sample-1/manifest.json",    "packageCover": "static/manifest/data/题目-recv8j7b-ugj-qeg-gemini3.1-pro-sample-1/1.webp",    "packageStepsCount": 71 },
+    { "id": "题目-recv8j7b-ugj-qeg-gpt5.4-sample-1",           "name": "题目_recv8J7bUgjQeg__gpt5.4__sample_1",           "packageManifest": "static/manifest/data/题目-recv8j7b-ugj-qeg-gpt5.4-sample-1/manifest.json",           "packageCover": "static/manifest/data/题目-recv8j7b-ugj-qeg-gpt5.4-sample-1/1.webp",           "packageStepsCount": 17 },
+    { "id": "题目-recv8j7b-ugj-qeg-gpt5.4-mini-sample-1",      "name": "题目_recv8J7bUgjQeg__gpt5.4_mini__sample_1",      "packageManifest": "static/manifest/data/题目-recv8j7b-ugj-qeg-gpt5.4-mini-sample-1/manifest.json",      "packageCover": "static/manifest/data/题目-recv8j7b-ugj-qeg-gpt5.4-mini-sample-1/1.webp",      "packageStepsCount": 68 },
+    { "id": "题目-recv8j7b-ugj-qeg-kimi-native-sample-1",      "name": "题目_recv8J7bUgjQeg__kimi_native__sample_1",      "packageManifest": "static/manifest/data/题目-recv8j7b-ugj-qeg-kimi-native-sample-1/manifest.json",      "packageCover": "static/manifest/data/题目-recv8j7b-ugj-qeg-kimi-native-sample-1/1.webp",      "packageStepsCount": 66 }
+  ]
+}
+</script>
+
 <!-- Replayer modal -->
 <div class="replayer-overlay" id="replayerOverlay" role="dialog" aria-modal="true">
   <div class="replayer-modal">
@@ -1942,12 +1993,16 @@
 </div>
 
 <script>
-/* Show Case: reads static/manifest/all.json, groups rollouts by model,
-   renders a model bar + thumbnail grid, and opens a self-contained replayer
-   (same manifest schema as @multimodal/gui-agent-replayer) on click. */
-(function() {
-  var MANIFEST_INDEX = 'static/manifest/all.json';
+/* Show Case: reads the inlined package index (#showcaseIndex JSON block),
+   groups rollouts by model, renders a model bar + thumbnail grid, and opens
+   a self-contained replayer (same manifest schema as
+   @multimodal/gui-agent-replayer) on click.
 
+   Index used to live in static/manifest/all.json and was fetched at runtime,
+   but that file kept getting forgotten at deploy time. Inlining it removes
+   the network hop entirely; per-package manifest.json + .webp screenshots
+   under static/manifest/data/<id>/ are still loaded on demand. */
+(function() {
   var bar  = document.getElementById('showcaseBar');
   var grid = document.getElementById('showcaseGrid');
   if (!bar || !grid) return;
@@ -2056,27 +2111,29 @@
     });
   }
 
-  fetch(MANIFEST_INDEX)
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      var pkgs = (data && data.packages) || [];
-      pkgs.forEach(function(pkg, i) {
-        pkg._gi = i;
-        pkg.meta = parseName(pkg.name || pkg.id || '');
-        pkg._cover = pickCover(pkg);
-        allPackages.push(pkg);
-        var m = pkg.meta.model;
-        if (!byModel[m]) { byModel[m] = []; modelOrder.push(m); }
-        byModel[m].push(pkg);
-      });
-      activeModel = modelOrder[0] || null;
-      renderBar();
-      renderGrid();
-    })
-    .catch(function(err) {
-      grid.innerHTML = '<div class="showcase-empty">Failed to load showcase data.</div>';
-      console.error('[showcase]', err);
+  // Read the inlined index from the <script type="application/json"> block.
+  // Synchronous parse; only "broken JSON" can fail, which would be a build-time
+  // issue rather than a runtime/network one.
+  try {
+    var indexEl = document.getElementById('showcaseIndex');
+    var data = indexEl ? JSON.parse(indexEl.textContent || '{}') : {};
+    var pkgs = (data && data.packages) || [];
+    pkgs.forEach(function(pkg, i) {
+      pkg._gi = i;
+      pkg.meta = parseName(pkg.name || pkg.id || '');
+      pkg._cover = pickCover(pkg);
+      allPackages.push(pkg);
+      var m = pkg.meta.model;
+      if (!byModel[m]) { byModel[m] = []; modelOrder.push(m); }
+      byModel[m].push(pkg);
     });
+    activeModel = modelOrder[0] || null;
+    renderBar();
+    renderGrid();
+  } catch (err) {
+    grid.innerHTML = '<div class="showcase-empty">Failed to load showcase data.</div>';
+    console.error('[showcase]', err);
+  }
 
   /* ---------- Replayer (seed-tars layout: history left, step result right) ---------- */
   var overlay = document.getElementById('replayerOverlay');

@@ -1,0 +1,13 @@
+# Local Showcase scaffolding — never deployed.
+# The package index now lives inline in index.html (see #showcaseIndex), so
+# these helper files exist only on developer machines.
+static/manifest/all.json
+static/manifest/all.remote.json
+static/manifest/fetch.log
+static/manifest/manifest.md
+static/manifest/_*.json
+static/manifest/*.jpeg
+
+# Common noise
+.DS_Store
+*.log
