@@ -179,25 +179,25 @@
       width: 100%; height: 100%;
       object-fit: cover; object-position: center center;
       transform: scale(1.02);
-      filter: saturate(0.78) brightness(1.06);
+      filter: saturate(0.65) brightness(1.07);
     }
     .wfg-hero-scrim {
       position: absolute; inset: 0; z-index: 1;
       background:
         radial-gradient(ellipse 90% 80% at center,
-          rgba(255,255,255,0.55) 0%,
-          rgba(255,255,255,0.60) 18%,
-          rgba(255,255,255,0.66) 36%,
-          rgba(255,255,255,0.74) 52%,
-          rgba(255,255,255,0.80) 68%,
-          rgba(255,255,255,0.85) 82%,
-          rgba(255,255,255,0.88) 92%,
-          rgba(255,255,255,0.90) 100%),
+          rgba(255,255,255,0.62) 0%,
+          rgba(255,255,255,0.66) 18%,
+          rgba(255,255,255,0.72) 36%,
+          rgba(255,255,255,0.79) 52%,
+          rgba(255,255,255,0.84) 68%,
+          rgba(255,255,255,0.88) 82%,
+          rgba(255,255,255,0.91) 92%,
+          rgba(255,255,255,0.93) 100%),
         linear-gradient(180deg,
-          rgba(255,255,255,0.44) 0%,
-          rgba(255,255,255,0.34) 35%,
-          rgba(255,255,255,0.38) 65%,
-          rgba(255,255,255,0.48) 100%);
+          rgba(255,255,255,0.50) 0%,
+          rgba(255,255,255,0.40) 35%,
+          rgba(255,255,255,0.44) 65%,
+          rgba(255,255,255,0.54) 100%);
     }
     .wfg-hero-overlay {
       position: absolute; inset: 0; z-index: 2;
@@ -1005,14 +1005,128 @@
     .replayer-body {
       flex: 1;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+      /* [models | history | step result] — models column is the new tab column
+         that lets the user swap between different agents replaying the SAME
+         task. */
+      grid-template-columns: minmax(170px, 200px) minmax(0, 1fr) minmax(0, 1.25fr);
       min-height: 0;
     }
+    @media (max-width: 1100px) {
+      .replayer-body { grid-template-columns: 150px minmax(0, 1fr) minmax(0, 1.15fr); }
+    }
     @media (max-width: 860px) {
-      .replayer-body { grid-template-columns: 1fr; grid-template-rows: minmax(0,1fr) minmax(0,1fr); }
+      .replayer-body { grid-template-columns: 1fr; grid-template-rows: auto minmax(0,1fr) minmax(0,1fr); }
     }
 
-    /* Left: full rollout history feed */
+    /* Far-left container — holds the model tabs on top and the task prompt
+       beneath them, sharing one grid column from .replayer-body. */
+    .rp-side {
+      background: #0e131b;
+      border-right: 1px solid #1e2733;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      min-width: 0;
+    }
+
+    /* Top sub-panel: model tabs (same task, different model rollouts). */
+    .rp-models {
+      padding: 14px 12px 12px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-height: 0;
+      flex: 0 1 auto;
+    }
+    .rp-models h3,
+    .rp-prompt h3 {
+      font-size: 0.66rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #6fe0ad;
+      font-weight: 700;
+      margin: 2px 6px 8px;
+      line-height: 1;
+    }
+
+    /* Bottom sub-panel: English prompt for the current task. */
+    .rp-prompt {
+      border-top: 1px solid #1e2733;
+      padding: 12px 14px 16px;
+      overflow-y: auto;
+      min-height: 0;
+      flex: 1 1 0;
+    }
+    .rp-prompt h3 { margin: 2px 0 8px; }
+    .rp-prompt .body {
+      color: #cdd6e2;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .rp-prompt .empty {
+      color: #6c7a8c;
+      font-size: 0.78rem;
+      line-height: 1.55;
+      font-style: italic;
+    }
+    .rp-model {
+      background: #161f2a;
+      border: 1px solid #233040;
+      color: #c8d2df;
+      border-radius: 10px;
+      padding: 9px 11px;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+      font-family: 'Product Sans', 'Segoe UI', 'Helvetica Neue', -apple-system, BlinkMacSystemFont, "Microsoft YaHei", Arial, sans-serif;
+    }
+    .rp-model:hover { background: #1b2735; border-color: #2f3e54; }
+    .rp-model.is-active {
+      background: #15241c;
+      border-color: #2f8a57;
+      color: #e1f6ec;
+      box-shadow: 0 0 0 1px rgba(47, 138, 87, 0.45) inset;
+    }
+    .rp-model .name {
+      font-weight: 700;
+      font-size: 0.84rem;
+      line-height: 1.2;
+    }
+    .rp-model .meta {
+      color: #8a97a8;
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-top: 3px;
+      font-variant-numeric: tabular-nums;
+    }
+    .rp-model.is-active .meta { color: #a3d6b7; }
+    /* On phone-width screens the side panel collapses to a horizontal strip
+       above the history: models become a row of scroll-snap chips and the
+       prompt drops to a small block under them. */
+    @media (max-width: 860px) {
+      .rp-side {
+        border-right: 0;
+        border-bottom: 1px solid #1e2733;
+        max-height: 40vh;
+      }
+      .rp-models {
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 10px 12px;
+        gap: 8px;
+      }
+      .rp-models h3 { display: none; }
+      .rp-model { flex: 0 0 auto; min-width: 120px; }
+      .rp-prompt {
+        max-height: 30vh;
+      }
+    }
+
+    /* Middle: full rollout history feed */
     .rp-history {
       background: #11171f;
       overflow-y: auto;
@@ -1450,6 +1564,7 @@
           <p class="wfg-hero-aff">
             <span class="wfg-hero-aff-item"><sup>1</sup>ByteDance Seed,</span>
             <span class="wfg-hero-aff-item"><sup>2</sup>M-A-P</span>
+            <span class="wfg-hero-aff-item"><sup>3</sup>Humanlaya AI</span>
           </p>
           <ul class="wfg-hero-bullets">
             <li>Workflow-GYM is a benchmark designed to evaluate whether GUI agents can autonomously complete real-world professional workflows through graphical user interfaces.</li>
@@ -1882,9 +1997,8 @@
   <div class="wfg-card">
       <h2 class="cool-title title is-3 card-title">Showcase</h2>
     <p style="color:#5a6675;margin:-6px 0 16px;font-size:0.95rem;">
-      Real agent rollouts. Pick a model, then click any task to replay its full execution trace.
+      Real agent rollouts. Click any task to compare different models' execution traces side-by-side.
     </p>
-    <div class="showcase-bar" id="showcaseBar"></div>
     <div class="showcase-grid" id="showcaseGrid"></div>
   </div>
 </section>
@@ -1898,14 +2012,8 @@
 {
   "id": "democase_selected_new",
   "name": "UI Showcase Collection",
-  "cover": "static/manifest/data/题目-1381-doubao2.1-sample-3/1.webp",
+  "cover": "static/manifest/cover/1442.png",
   "packages": [
-    { "id": "题目-1381-doubao2.1-sample-3",                    "name": "_1381__doubao2.1__sample_3",                      "packageManifest": "static/manifest/data/题目-1381-doubao2.1-sample-3/manifest.json",                    "packageCover": "static/manifest/data/题目-1381-doubao2.1-sample-3/1.webp",                    "packageStepsCount": 214 },
-    { "id": "题目-1381-gemini3-flash-sample-1",                "name": "_1381__gemini3-flash__sample_1",                  "packageManifest": "static/manifest/data/题目-1381-gemini3-flash-sample-1/manifest.json",                "packageCover": "static/manifest/data/题目-1381-gemini3-flash-sample-1/1.webp",                "packageStepsCount": 69 },
-    { "id": "题目-1381-gemini3.1-pro-sample-1",                "name": "_1381__gemini3.1-pro__sample_1",                  "packageManifest": "static/manifest/data/题目-1381-gemini3.1-pro-sample-1/manifest.json",                "packageCover": "static/manifest/data/题目-1381-gemini3.1-pro-sample-1/1.webp",                "packageStepsCount": 207 },
-    { "id": "题目-1381-gpt5.4-sample-1",                       "name": "_1381__gpt5.4__sample_1",                         "packageManifest": "static/manifest/data/题目-1381-gpt5.4-sample-1/manifest.json",                       "packageCover": "static/manifest/data/题目-1381-gpt5.4-sample-1/1.webp",                       "packageStepsCount": 29 },
-    { "id": "题目-1381-gpt5.4-mini-sample-1",                  "name": "_1381__gpt5.4_mini__sample_1",                    "packageManifest": "static/manifest/data/题目-1381-gpt5.4-mini-sample-1/manifest.json",                  "packageCover": "static/manifest/data/题目-1381-gpt5.4-mini-sample-1/1.webp",                  "packageStepsCount": 24 },
-    { "id": "题目-1381-kimi-native-sample-3",                  "name": "_1381__kimi_native__sample_3",                    "packageManifest": "static/manifest/data/题目-1381-kimi-native-sample-3/manifest.json",                  "packageCover": "static/manifest/data/题目-1381-kimi-native-sample-3/1.webp",                  "packageStepsCount": 43 },
     { "id": "题目-1442-doubao2.1-sample-1",                    "name": "_1442__doubao2.1__sample_1",                      "packageManifest": "static/manifest/data/题目-1442-doubao2.1-sample-1/manifest.json",                    "packageCover": "static/manifest/data/题目-1442-doubao2.1-sample-1/1.webp",                    "packageStepsCount": 351 },
     { "id": "题目-1442-gemini3-flash-sample-1",                "name": "_1442__gemini3-flash__sample_1",                  "packageManifest": "static/manifest/data/题目-1442-gemini3-flash-sample-1/manifest.json",                "packageCover": "static/manifest/data/题目-1442-gemini3-flash-sample-1/1.webp",                "packageStepsCount": 92 },
     { "id": "题目-1442-gemini3.1-pro-sample-1",                "name": "_1442__gemini3.1-pro__sample_1",                  "packageManifest": "static/manifest/data/题目-1442-gemini3.1-pro-sample-1/manifest.json",                "packageCover": "static/manifest/data/题目-1442-gemini3.1-pro-sample-1/1.webp",                "packageStepsCount": 154 },
@@ -1951,7 +2059,13 @@
       <button class="rp-close" id="rpClose" aria-label="Close">&times;</button>
     </div>
     <div class="replayer-body">
-      <!-- Left: full rollout history -->
+      <!-- Far-left: model picker (top) + task prompt (bottom). Both panels
+           share a single grid column via this flex wrapper. -->
+      <aside class="rp-side">
+        <div class="rp-models" id="rpModels" aria-label="Available models for this task"></div>
+        <div class="rp-prompt" id="rpPrompt" aria-label="Task prompt"></div>
+      </aside>
+      <!-- Middle: full rollout history -->
       <div class="rp-history" id="rpHistory"></div>
       <!-- Right: single-step rendered tool-call result -->
       <div class="rp-result">
@@ -1994,18 +2108,18 @@
 
 <script>
 /* Show Case: reads the inlined package index (#showcaseIndex JSON block),
-   groups rollouts by model, renders a model bar + thumbnail grid, and opens
-   a self-contained replayer (same manifest schema as
-   @multimodal/gui-agent-replayer) on click.
+   groups rollouts by TASK (one card per task), and opens a self-contained
+   replayer (same manifest schema as @multimodal/gui-agent-replayer) on click.
+   Inside the replayer the user can switch between models that ran the same
+   task via the left-side model tab column.
 
    Index used to live in static/manifest/all.json and was fetched at runtime,
    but that file kept getting forgotten at deploy time. Inlining it removes
    the network hop entirely; per-package manifest.json + .webp screenshots
    under static/manifest/data/<id>/ are still loaded on demand. */
 (function() {
-  var bar  = document.getElementById('showcaseBar');
   var grid = document.getElementById('showcaseGrid');
-  if (!bar || !grid) return;
+  if (!grid) return;
 
   function esc(s) {
     return String(s)
@@ -2013,7 +2127,7 @@
       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
-  // Parse a package "name" like "_1381__doubao2.1__sample_3" or
+  // Parse a package "name" like "_1442__doubao2.1__sample_1" or
   // "题目_1799__gpt5.4_mini__sample_1" into { taskId, model, sample }.
   function parseName(name) {
     var s = String(name).replace(/^题目/, '');
@@ -2025,7 +2139,7 @@
   }
 
   var MODEL_LABELS = {
-    'doubao2.1': 'Seed-2.1',
+    'doubao2.1': 'Seed-2.0-Lite',
     'gemini3-flash': 'Gemini-3-Flash',
     'gemini3.1-pro': 'Gemini-3.1-Pro',
     'gpt5.4': 'GPT-5.4',
@@ -2034,79 +2148,64 @@
   };
   function modelLabel(m) { return MODEL_LABELS[m] || m; }
 
+  // Display order for the per-task model tab column inside the replayer modal.
+  // Mirrors the Leaderboard's row order so users see a consistent ranking
+  // across the two cards. Unknown models fall to the end.
+  var MODEL_ORDER = [
+    'gemini3.1-pro', 'kimi_native', 'doubao2.1',
+    'gpt5.4', 'gpt5.4_mini', 'gemini3-flash'
+  ];
+
+  // English prompt for each showcased task, shown in the bottom-left panel of
+  // the replayer modal. Keyed by the same taskId that parseName() extracts
+  // from package names (e.g. "1442", "recv8J7bUgjQeg"). If a task isn't found
+  // here, the prompt panel falls back to a "no prompt available" message.
+  var TASK_PROMPTS = {
+    '1442': 'A student majoring in Electrical Engineering and Automation wants to use OpenPLC Editor to write a basic start-stop control program for a conveyor motor. Please guide me to create a project named Case1_Motor, save it to /home/user/Desktop/output/Case1_Motor, and create a new Main program with LD as the language. Also, help me define three BOOL variables: Start_PB, Stop_PB, and Motor. Then, build the classic start-stop circuit in the ladder diagram, including the left busbar, normally open start contact, normally closed stop contact, Motor coil, right busbar, and the Motor self-locking contact connected in parallel across the start contact. Finally, explain how to simulate and observe whether the motor operating status is correct by operating the start and stop contacts.',
+    '1799': 'I now want to use Anki 23.12.1-linux-qt6 to complete an English word learning task. Please guide me through the operations: First, create a new Profile named "animal" and use the images monkey.png, dog.png, cat.png, bird.png, and rat.png from the folder /home/user/Desktop/input/animal. Then, create a new deck named "zoo", select "Basic (type in the answer)" as the card type, and fill in "zoo" in the Tags. Next, help me create 5 question-and-answer cards, using the corresponding images respectively, with the Back content filled in as monkey, dog, cat, bird, and rat in sequence. After the creation is completed, please guide me to complete a study session in the order of monkey, dog, cat, bird, rat. Finally, export the deck as Notes in Plain Text (.txt) format, select "zoo" for Include, check Include deck name, Include notetype name, and Include unique identifier, and save the file to /home/user/Desktop/output/zoo.txt.',
+    '1876': 'I am a thermal simulation engineer and would like to build a first-order thermal system model in OMEdit to verify its functionality. I need your guidance to complete this. The model is named Case03_ThermalStep and requires the use of components such as HeatCapacitor, ThermalConductor, PrescribedTemperature, and Step. The parameters are set as C=10 and G=1, with the initial temperature of the heat capacitor set to 293.15. The ambient temperature is simulated using a step signal, which increases by 10K at the 5th second, corresponding to Step.height=10 and Step.startTime=5. Please help me set the simulation time to 20 seconds, run the simulation, and finally export the temperature vs. time curve data as OpenModelica_Case03_Temperature.csv, saving it to /home/user/Desktop/output/OpenModelica_Case03_Temperature.csv.',
+    '591': 'Construct a cubic phase Lu\u2082O\u2083 crystal structure using VESTA, with Er doping at the Lu1 site. The space group is No. 206 Ia-3, and the lattice parameters are a = b = c = 10.365, \u03b1 = \u03b2 = \u03b3 = 90\u00b0. The atomic coordinates are as follows: Lu1 (0, 0.25, 0.467) with an occupancy of 0.75; Lu2 (0.25, 0.25, 0.25); O (0.10870, 0.15250, 0.61970). Additionally, add an Er atom at the Lu1 site (0, 0.25, 0.467) with an occupancy of 0.25, corresponding to 25% Er doping. Set the Max. length of Bonds to 2.6 in terms of bond length. Finally, export the structure as Lu2O3-Er.cif and save it to /home/user/Desktop/output/Lu2O3-Er.cif.',
+    'recv8J7bUgjQeg': 'I have an assignment for you: perform a complete logistic regression analysis on the Titanic dataset using jamovi. The data file is located at /home/user/Desktop/input/Titanic.csv. The outcome variable is Survived (0 = perished, 1 = survived), and the predictor variables are Pclass, Sex, Age, SibSp, Parch, Fare, and Embarked. In terms of the process, first, go to Exploration \u2192 Descriptives and check Frequency tables for data exploration. Then, navigate to the Data tab, use compute to create a new variable FamilySize with the formula SibSp + Parch + 1. Next, in Regression \u2192 Logistic Regression under 2 Outcomes Binomial, for Model Fit, check Nagelkerke R\u00b2 and BIC; for Prediction, check Specificity, Sensitivity, Classification table, ROC curve, and AUC. Finally, submit the model\'s AUC value as the core indicator of prediction accuracy to me.'
+  };
+
   var allPackages = [];
-  var byModel = {};
-  var modelOrder = [];
-  var activeModel = null;
+  var byTask = {};      // { taskId: [pkg, pkg, ...] }, ordered by MODEL_ORDER
+  var taskOrder = [];   // ordered list of task IDs as they appear in the index
 
-  // Deterministic pseudo-random in [0,1) seeded by a string — keeps the
-  // randomly chosen cover stable across reloads instead of flickering.
-  function seededRand(str) {
-    var h = 2166136261;
-    for (var i = 0; i < str.length; i++) {
-      h ^= str.charCodeAt(i);
-      h = Math.imul(h, 16777619);
-    }
-    return ((h >>> 0) % 100000) / 100000;
+  // Per-task cover lives at static/manifest/cover/<taskId>.png. The taskId is
+  // whatever parseName() extracts from the package name (digits like "1442",
+  // or symbolic like "recv8J7bUgjQeg" — both have matching files in the
+  // cover/ directory).
+  function coverFor(taskId) {
+    return 'static/manifest/cover/' + encodeURIComponent(taskId) + '.png';
   }
 
-  // Derive the local base folder of a package's webp screenshots from its
-  // (now local) manifest path: static/manifest/data/<pkgId>/manifest.json
-  function coverBaseFromManifest(url) {
-    var idx = url.lastIndexOf('/');
-    if (idx < 0) return null;
-    return url.slice(0, idx + 1);
-  }
-
-  function pickCover(pkg) {
-    var base = coverBaseFromManifest(pkg.packageManifest);
-    var count = pkg.packageStepsCount || 1;
-    if (base) {
-      // Random screenshot index in [1, count].
-      var n = Math.max(1, Math.min(count, 1 + Math.floor(seededRand(pkg.name || pkg.id) * count)));
-      return base + n + '.webp';
-    }
-    return pkg.packageCover || '';
-  }
-
-  function renderBar() {
-    bar.innerHTML = modelOrder.map(function(m) {
-      return '<button data-model="' + esc(m) + '"' +
-        (m === activeModel ? ' class="is-active"' : '') + '>' +
-        esc(modelLabel(m)) + '</button>';
-    }).join('');
-    Array.prototype.forEach.call(bar.querySelectorAll('button'), function(btn) {
-      btn.addEventListener('click', function() {
-        activeModel = btn.getAttribute('data-model');
-        Array.prototype.forEach.call(bar.querySelectorAll('button'), function(b) {
-          b.classList.toggle('is-active', b === btn);
-        });
-        renderGrid();
-      });
+  function sortPackagesByModel(arr) {
+    arr.sort(function(a, b) {
+      var ia = MODEL_ORDER.indexOf(a.meta.model);
+      var ib = MODEL_ORDER.indexOf(b.meta.model);
+      if (ia < 0) ia = 99;
+      if (ib < 0) ib = 99;
+      return ia - ib;
     });
   }
 
   function renderGrid() {
-    var items = byModel[activeModel] || [];
-    if (!items.length) {
-      grid.innerHTML = '<div class="showcase-empty">No rollouts available for this model.</div>';
+    if (!taskOrder.length) {
+      grid.innerHTML = '<div class="showcase-empty">No tasks available.</div>';
       return;
     }
-    grid.innerHTML = items.map(function(it, i) {
-      return '<div class="showcase-cell" data-idx="' + it._gi + '">' +
-          '<img class="thumb" loading="lazy" src="' + esc(it._cover) + '" alt="task ' + esc(it.meta.taskId) + '" />' +
+    grid.innerHTML = taskOrder.map(function(taskId) {
+      return '<div class="showcase-cell" data-task="' + esc(taskId) + '">' +
+          '<img class="thumb" loading="lazy" src="' + esc(coverFor(taskId)) + '" alt="task ' + esc(taskId) + '" />' +
           '<div class="meta">' +
-            '<div class="tag-row">' +
-              '<span class="badge">Task ' + esc(it.meta.taskId) + '</span>' +
-              '<span class="steps">' + (it.packageStepsCount || 0) + ' steps</span>' +
-            '</div>' +
-            '<div class="title">' + esc(modelLabel(it.meta.model)) + ' · #' + esc(it.meta.taskId) + '</div>' +
+            '<div class="title">#' + esc(taskId) + '</div>' +
           '</div>' +
         '</div>';
     }).join('');
     Array.prototype.forEach.call(grid.querySelectorAll('.showcase-cell'), function(cell) {
       cell.addEventListener('click', function() {
-        openReplayer(allPackages[+cell.getAttribute('data-idx')]);
+        openReplayer(cell.getAttribute('data-task'));
       });
     });
   }
@@ -2121,24 +2220,26 @@
     pkgs.forEach(function(pkg, i) {
       pkg._gi = i;
       pkg.meta = parseName(pkg.name || pkg.id || '');
-      pkg._cover = pickCover(pkg);
       allPackages.push(pkg);
-      var m = pkg.meta.model;
-      if (!byModel[m]) { byModel[m] = []; modelOrder.push(m); }
-      byModel[m].push(pkg);
+      var t = pkg.meta.taskId;
+      if (!byTask[t]) { byTask[t] = []; taskOrder.push(t); }
+      byTask[t].push(pkg);
     });
-    activeModel = modelOrder[0] || null;
-    renderBar();
+    // Sort each task's package list so the model tabs always appear in the
+    // canonical Leaderboard order, regardless of insertion sequence.
+    taskOrder.forEach(function(t) { sortPackagesByModel(byTask[t]); });
     renderGrid();
   } catch (err) {
     grid.innerHTML = '<div class="showcase-empty">Failed to load showcase data.</div>';
     console.error('[showcase]', err);
   }
 
-  /* ---------- Replayer (seed-tars layout: history left, step result right) ---------- */
+  /* ---------- Replayer (seed-tars layout: models left, history middle, step result right) ---------- */
   var overlay = document.getElementById('replayerOverlay');
   var elTitle = document.getElementById('rpTitle');
   var elSub   = document.getElementById('rpSub');
+  var elModels  = document.getElementById('rpModels');
+  var elPrompt  = document.getElementById('rpPrompt');
   var elHistory = document.getElementById('rpHistory');
   var elImg   = document.getElementById('rpImg');
   var elMarker= document.getElementById('rpMarker');
@@ -2164,7 +2265,7 @@
   var view = 'ui';
   var curModel = '';
 
-  // Seed-2.1 (doubao2.1) emits click coordinates in a relative 1000x1000
+  // Seed-2.0-Lite (doubao2.1) emits click coordinates in a relative 1000x1000
   // space. The Gemini family (both Flash and 3.1 Pro) and the rest emit
   // absolute resolution-space pixels (or [0,1] normalized).
   function uses1000Grid(model) {
@@ -2290,9 +2391,45 @@
     if (elImg.complete && elImg.naturalWidth) positionMarker(step);
   }
 
-  function openReplayer(pkg) {
-    overlay.classList.add('is-open');
-    document.body.style.overflow = 'hidden';
+  // Currently open task — its list of per-model packages is what powers the
+  // left-side model tab column inside the replayer modal.
+  var modalPkgs = [];
+  var modalActiveIdx = -1;
+
+  function renderModelColumn() {
+    if (!modalPkgs.length) {
+      elModels.innerHTML = '';
+      return;
+    }
+    elModels.innerHTML = '<h3>Models</h3>' + modalPkgs.map(function(pkg, i) {
+      var active = (i === modalActiveIdx) ? ' is-active' : '';
+      return '<button class="rp-model' + active + '" data-idx="' + i + '" type="button">' +
+          '<div class="name">' + esc(modelLabel(pkg.meta.model)) + '</div>' +
+          '<div class="meta">' + (pkg.packageStepsCount || 0) + ' steps</div>' +
+        '</button>';
+    }).join('');
+    Array.prototype.forEach.call(elModels.querySelectorAll('.rp-model'), function(btn) {
+      btn.addEventListener('click', function() {
+        var idx = +btn.getAttribute('data-idx');
+        if (idx === modalActiveIdx) return;
+        selectModel(idx);
+      });
+    });
+  }
+
+  function selectModel(idx) {
+    if (!modalPkgs[idx]) return;
+    modalActiveIdx = idx;
+    Array.prototype.forEach.call(elModels.querySelectorAll('.rp-model'), function(b, i) {
+      b.classList.toggle('is-active', i === idx);
+    });
+    loadReplay(modalPkgs[idx]);
+  }
+
+  // Loads one specific (task, model) manifest into the right two panels.
+  // Does NOT touch overlay open state or the left model column — those are
+  // managed by openReplayer()/selectModel().
+  function loadReplay(pkg) {
     curModel = pkg.meta.model || '';
     elTitle.textContent = 'Task ' + pkg.meta.taskId + ' \u00B7 ' + modelLabel(pkg.meta.model);
     elSub.textContent = (pkg.packageStepsCount || 0) + ' steps' + (pkg.meta.sample ? ' \u00B7 sample ' + pkg.meta.sample : '');
@@ -2304,6 +2441,8 @@
     fetch(pkg.packageManifest)
       .then(function(r) { return r.json(); })
       .then(function(m) {
+        // Guard against late-arriving fetches after the user switched tabs.
+        if (modalPkgs[modalActiveIdx] !== pkg) return;
         steps = (m && m.steps) || [];
         elScrub.max = Math.max(0, steps.length - 1);
         renderHistory(m);
@@ -2312,10 +2451,33 @@
         else { elHistory.innerHTML = '<div class="rp-h-text">No steps in this rollout.</div>'; }
       })
       .catch(function(err) {
+        if (modalPkgs[modalActiveIdx] !== pkg) return;
         elLoading.style.display = 'none';
         elHistory.innerHTML = '<div class="rp-h-text">Failed to load replay.</div>';
         console.error('[replayer]', err);
       });
+  }
+
+  function renderPrompt(taskId) {
+    var p = TASK_PROMPTS[taskId];
+    if (p) {
+      elPrompt.innerHTML = '<h3>Prompt</h3><div class="body">' + esc(p) + '</div>';
+    } else {
+      elPrompt.innerHTML = '<h3>Prompt</h3><div class="empty">No prompt available for this task.</div>';
+    }
+    elPrompt.scrollTop = 0;
+  }
+
+  function openReplayer(taskId) {
+    var pkgs = byTask[taskId] || [];
+    if (!pkgs.length) return;
+    overlay.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+    modalPkgs = pkgs;
+    modalActiveIdx = -1;
+    renderModelColumn();
+    renderPrompt(taskId);
+    selectModel(0);
   }
 
   function closeReplayer() {
@@ -2323,6 +2485,9 @@
     overlay.classList.remove('is-open');
     document.body.style.overflow = '';
     elImg.src = '';
+    // Drop the active reference so any in-flight manifest fetch becomes a no-op.
+    modalPkgs = [];
+    modalActiveIdx = -1;
   }
 
   document.getElementById('rpClose').addEventListener('click', closeReplayer);
