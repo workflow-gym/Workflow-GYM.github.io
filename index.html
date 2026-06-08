@@ -83,8 +83,18 @@
       color: #0f1626;
       text-decoration: none;
       flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
     }
     .wfg-nav-brand:hover { color: #34b27d; }
+    .wfg-nav-logo {
+      /* SVG uses 1em sizing internally; scale it relative to the brand
+         text so the colour bars sit cap-height aligned with "Workflow-GYM". */
+      width: 1.35em;
+      height: 1.35em;
+      display: block;
+    }
     .wfg-nav-links {
       display: flex;
       gap: clamp(6px, 1.4vw, 22px);
@@ -795,6 +805,113 @@
        (brightness + drop-shadow) while non-hovered bars dim. transform-box +
        transform-origin make the scaleX(0)->scaleX(1) animation start from the
        bar's left edge regardless of x. */
+    /* Per-row "show domain breakdown" button. The button is built lazily by
+       JS (see `mountRowButton` below) and inserted into each row <g> of the
+       Score SVG. The "+" / "−" glyph is drawn as two <line>s anchored on the
+       circle's geometric centre, so centring is exact (no font-metric drift). */
+    .lb-chart .lb-row-btn { cursor: pointer; }
+    .lb-chart .lb-row-btn .lb-row-btn-bg {
+      fill: #eef6f1;
+      stroke: #3aaf85;
+      stroke-width: 1.5;
+      transition: fill 0.15s, stroke 0.15s;
+    }
+    .lb-chart .lb-row-btn line {
+      stroke: #1f8a5f;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      pointer-events: none;
+      transition: stroke 0.15s, opacity 0.15s;
+    }
+    .lb-chart .lb-row-btn:hover .lb-row-btn-bg { fill: #d6f1e3; }
+    .lb-chart .lb-row-btn.is-active .lb-row-btn-bg { fill: #2f8a57; stroke: #1f8a5f; }
+    .lb-chart .lb-row-btn.is-active line { stroke: #ffffff; }
+    /* Toggle the vertical stroke off so the cross collapses to a minus
+       sign when the row is in the "open" state. */
+    .lb-chart .lb-row-btn.is-active .lb-row-btn-v { opacity: 0; }
+    /* Suppress the default black focus ring shown by Chromium / WebKit when
+       the SVG <g role="button" tabindex="0"> is clicked or focused via mouse.
+       Keyboard users still get a visible focus state via :focus-visible. */
+    .lb-chart .lb-row-btn:focus { outline: none; }
+    .lb-chart .lb-row-btn:focus-visible .lb-row-btn-bg { stroke-width: 2.5; }
+
+    /* Domain-breakdown panel that appears below the Score chart when a
+       row button is clicked. Mirrors the OSWorld-style per-category table
+       in the reference screenshot. */
+    .lb-domain-panel {
+      max-height: 0;
+      overflow: hidden;
+      margin-top: 0;
+      transition: max-height 0.35s ease, margin-top 0.25s ease, opacity 0.25s ease;
+      opacity: 0;
+    }
+    .lb-domain-panel.is-open {
+      max-height: 220px;
+      margin-top: 14px;
+      opacity: 1;
+    }
+    .lb-domain-card {
+      border: 1px solid #e4e8eb;
+      border-radius: 12px;
+      background: #fbfcfb;
+      padding: 12px 14px 14px;
+      overflow-x: auto;
+    }
+    .lb-domain-card .lb-domain-hd {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      color: #5a6675;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+    .lb-domain-card .lb-domain-hd .who {
+      color: #1f8a5f;
+      text-transform: none;
+      font-size: 0.92rem;
+      letter-spacing: 0;
+    }
+    .lb-domain-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      font-variant-numeric: tabular-nums;
+      table-layout: fixed;
+    }
+    .lb-domain-table th,
+    .lb-domain-table td {
+      padding: 8px 6px;
+      text-align: center;
+      border-bottom: 1px solid #eef1f4;
+    }
+    .lb-domain-table thead th {
+      color: #5a6675;
+      font-weight: 700;
+      font-size: 0.72rem;
+      letter-spacing: 0.2px;
+      line-height: 1.25;
+      border-bottom: 1.5px solid #d9dde2;
+      white-space: normal;
+    }
+    .lb-domain-table tbody td {
+      color: #2e3c50;
+      font-weight: 600;
+      border-bottom: 0;
+    }
+    .lb-domain-table th.col-avg,
+    .lb-domain-table td.col-avg {
+      background: #f3f8f5;
+      border-right: 1px solid #e4e8eb;
+      font-weight: 800;
+    }
+    .lb-domain-table td.is-max {
+      color: #1f8a5f;
+      font-weight: 800;
+    }
+
     .lb-chart rect.bar {
       transform-box: fill-box;
       transform-origin: 0% 50%;
@@ -931,10 +1048,20 @@
       font-weight: 600;
     }
     .showcase-cell .meta .title {
-      font-size: 0.96rem;
+      font-size: 0.86rem;
       font-weight: 700;
       color: #2e3c50;
-      line-height: 1.3;
+      line-height: 1.45;
+      /* Clamp to 4 lines so showcase titles of wildly different lengths still
+         produce cells with similar visual weight. Overflow is truncated with
+         an ellipsis; the full string remains accessible via the title="..."
+         attribute we set on the wrapper. */
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      min-height: calc(0.86rem * 1.45 * 3);
     }
     .showcase-empty {
       text-align: center;
@@ -1059,6 +1186,13 @@
       flex: 1 1 0;
     }
     .rp-prompt h3 { margin: 2px 0 8px; }
+    .rp-prompt-title {
+      color: #e2eaf4;
+      font-size: 0.88rem;
+      font-weight: 700;
+      line-height: 1.4;
+      margin: 0 0 10px;
+    }
     .rp-prompt .body {
       color: #cdd6e2;
       font-size: 0.82rem;
@@ -1430,8 +1564,8 @@
   <title>Workflow-GYM</title>
   
   <!-- Favicon and App Icons -->
-  <link rel="icon" type="image/x-icon" href="static/images/carousel1.jpg">
-  <link rel="apple-touch-icon" href="static/images/carousel1.jpg">
+  <link rel="icon" type="image/svg+xml" href="static/images/bytedance-color.svg">
+  <link rel="apple-touch-icon" href="static/images/bytedance-color.svg">
   
   <!-- Critical CSS - Load synchronously -->
   <link rel="stylesheet" href="static/css/bulma.min.css">
@@ -1539,7 +1673,10 @@
 
   <nav class="wfg-nav" aria-label="Page sections">
     <div class="wfg-nav-inner">
-      <a class="wfg-nav-brand" href="#top">Workflow-GYM</a>
+      <a class="wfg-nav-brand" href="#top">
+        <img class="wfg-nav-logo" src="static/images/bytedance-color.svg" alt="ByteDance"/>
+        <span>Workflow-GYM</span>
+      </a>
       <div class="wfg-nav-links">
         <a href="#pipeline">Pipeline</a>
         <a href="#stats">Data Statistics</a>
@@ -1563,7 +1700,7 @@
           </h1>
           <p class="wfg-hero-aff">
             <span class="wfg-hero-aff-item"><sup>1</sup>ByteDance Seed,</span>
-            <span class="wfg-hero-aff-item"><sup>2</sup>M-A-P</span>
+            <span class="wfg-hero-aff-item"><sup>2</sup>M-A-P,</span>
             <span class="wfg-hero-aff-item"><sup>3</sup>Humanlaya AI</span>
           </p>
           <ul class="wfg-hero-bullets">
@@ -1758,8 +1895,11 @@
           <text class="legend-text" x="142" y="13">Pass@3</text>
         </g>
 
-        <!-- Row 1: Gemini-3.1-Pro (Avg 30.67 / Pass@3 41.12) -->
-        <g>
+        <!-- Row 1: Gemini-3.1-Pro (Avg 30.67 / Pass@3 41.12)
+             Each row carries data-model="..."; the per-row breakdown button
+             is injected by JS (mountRowButton) using bar coordinates so its
+             cy is always perfectly centred between the two bars. -->
+        <g class="lb-row" data-model="Gemini-3.1-Pro">
           <text class="axis-text" x="164" y="116" text-anchor="end">Gemini-3.1-Pro</text>
           <rect class="bar" x="180" y="90"  width="518" height="18" rx="3" fill="#2f8a57"/>
           <text class="value-label" x="706" y="104">30.67</text>
@@ -1768,7 +1908,7 @@
         </g>
 
         <!-- Row 2: Kimi-K2.6 (Avg 29.68 / Pass@3 41.42) -->
-        <g>
+        <g class="lb-row" data-model="Kimi-K2.6">
           <text class="axis-text" x="164" y="180" text-anchor="end">Kimi-K2.6</text>
           <rect class="bar" x="180" y="154" width="501" height="18" rx="3" fill="#cf8642"/>
           <text class="value-label" x="689" y="168">29.68</text>
@@ -1777,7 +1917,7 @@
         </g>
 
         <!-- Row 3: Seed-2.0-Lite (Avg 18.54 / Pass@3 28.40) -->
-        <g>
+        <g class="lb-row" data-model="Seed-2.0-Lite">
           <text class="axis-text" x="164" y="244" text-anchor="end">Seed-2.0-Lite</text>
           <rect class="bar" x="180" y="218" width="313" height="18" rx="3" fill="#4a85c4"/>
           <text class="value-label" x="501" y="232">18.54</text>
@@ -1786,7 +1926,7 @@
         </g>
 
         <!-- Row 4: GPT-5.4 (Avg 17.85 / Pass@3 26.33) -->
-        <g>
+        <g class="lb-row" data-model="GPT-5.4">
           <text class="axis-text" x="164" y="308" text-anchor="end">GPT-5.4</text>
           <rect class="bar" x="180" y="282" width="302" height="18" rx="3" fill="#6c6e7a"/>
           <text class="value-label" x="490" y="296">17.85</text>
@@ -1795,7 +1935,7 @@
         </g>
 
         <!-- Row 5: GPT-5.4-Mini (Avg 15.98 / Pass@3 27.22) -->
-        <g>
+        <g class="lb-row" data-model="GPT-5.4-Mini">
           <text class="axis-text" x="164" y="372" text-anchor="end">GPT-5.4-Mini</text>
           <rect class="bar" x="180" y="346" width="270" height="18" rx="3" fill="#6c6e7a"/>
           <text class="value-label" x="458" y="360">15.98</text>
@@ -1804,7 +1944,7 @@
         </g>
 
         <!-- Row 6: Gemini-3-Flash (Avg 7.89 / Pass@3 15.98) -->
-        <g>
+        <g class="lb-row" data-model="Gemini-3-Flash">
           <text class="axis-text" x="164" y="436" text-anchor="end">Gemini-3-Flash</text>
           <rect class="bar" x="180" y="410" width="133" height="18" rx="3" fill="#2f8a57"/>
           <text class="value-label" x="321" y="424">7.89</text>
@@ -1815,6 +1955,11 @@
         <!-- Axis label -->
         <text class="axis-title" x="560" y="520" text-anchor="middle">Score</text>
       </svg>
+
+      <!-- Domain-breakdown panel: empty by default, populated + revealed when
+           any row's "+" button is clicked. The JS lives in the leaderboard
+           IIFE further down. -->
+      <div class="lb-domain-panel" id="lbDomainPanel" aria-live="polite"></div>
     </div>
 
     <!-- Tab 2: Outcome Failure Composition (horizontal stacked bars).
@@ -1979,7 +2124,186 @@
         p.classList.toggle('is-active', on);
         if (on) activated = p;
       });
+      // When leaving the Score tab, collapse the domain breakdown so the
+      // active button highlight + open panel don't visually persist beneath
+      // an inactive tab. (The breakdown only makes sense alongside the Score
+      // chart, not the Failure stacks.)
+      if (target !== 'score') closeDomainPanel();
       animateChart(activated);
+    });
+  });
+
+  /* ---------- Per-model domain breakdown ---------- */
+  // Per-domain pass scores for each model. Column order matches the donut
+  // chart's primary categories (Scientific Computing / Data Analysis /
+  // Engineering & Design / Finance & Management / Geography & Environment /
+  // Multimedia & Creative); averaging the six values for any row reproduces
+  // that model's Avg Score within ~1 point.
+  var DOMAIN_NAMES = [
+    'Scientific Computing',
+    'Data Analysis',
+    'Engineering & Design',
+    'Finance & Management',
+    'Geography & Environment',
+    'Multimedia & Creative'
+  ];
+  var MODEL_DOMAIN_SCORES = {
+    'Gemini-3.1-Pro': [39.88, 24.44, 37.44, 27.93, 21.95, 31.97],
+    'Kimi-K2.6':      [45.24, 21.48, 32.82, 25.23, 27.64, 27.89],
+    'GPT-5.4':        [26.19, 10.37, 24.10, 17.12, 17.89, 14.29],
+    'GPT-5.4-Mini':   [19.05, 12.59, 20.00,  9.01, 17.07, 17.69],
+    'Seed-2.0-Lite':  [16.67, 10.74, 25.64, 18.02, 18.70, 25.85],
+    'Gemini-3-Flash': [10.12,  6.67,  9.23,  0.90,  8.94, 10.20]
+  };
+  // Column-wise max so we can bold the best-in-domain cell, mirroring the
+  // \textbf{} marks in the user-supplied LaTeX source.
+  var DOMAIN_MAX = DOMAIN_NAMES.map(function(_, i) {
+    var best = -Infinity;
+    Object.keys(MODEL_DOMAIN_SCORES).forEach(function(m) {
+      if (MODEL_DOMAIN_SCORES[m][i] > best) best = MODEL_DOMAIN_SCORES[m][i];
+    });
+    return best;
+  });
+
+  var domainPanel = document.getElementById('lbDomainPanel');
+
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  /* ---------- Row breakdown button module ----------
+     A small, self-contained factory that, given a row <g class="lb-row"
+     data-model="…"> inside the Score chart, derives the button's geometry
+     from that row's <rect class="bar"> children and mounts a "+" / "−"
+     toggle button. All coordinates are computed (no row-specific magic
+     numbers in HTML) and the "+" cross is drawn with two <line>s anchored
+     on the circle's true centre — perfectly centred regardless of font. */
+  var SVG_NS = 'http://www.w3.org/2000/svg';
+  function svgEl(tag, attrs) {
+    var el = document.createElementNS(SVG_NS, tag);
+    if (attrs) Object.keys(attrs).forEach(function(k) {
+      el.setAttribute(k, attrs[k]);
+    });
+    return el;
+  }
+
+  // Build + insert one button into `rowG`.
+  // Geometry inputs (from the row + chart):
+  //   - cy = midpoint between the two bars' vertical centres
+  //   - cx = chart-wide constant supplied by the caller
+  //   - r  = circle radius; arm = half-length of the "+" stroke
+  function mountRowButton(rowG, cx, opts) {
+    opts = opts || {};
+    var r = opts.r != null ? opts.r : 12;
+    var arm = opts.arm != null ? opts.arm : 5;
+    var bars = rowG.querySelectorAll('rect.bar');
+    if (bars.length < 2) return null;
+    var cy = 0;
+    for (var i = 0; i < bars.length; i++) {
+      var y = parseFloat(bars[i].getAttribute('y'));
+      var h = parseFloat(bars[i].getAttribute('height'));
+      cy += y + h / 2;
+    }
+    cy /= bars.length;
+    var model = rowG.getAttribute('data-model') || '';
+    var g = svgEl('g', {
+      'class': 'lb-row-btn',
+      'data-model': model,
+      'role': 'button',
+      'tabindex': '0',
+      'aria-label': 'Show per-domain breakdown for ' + model
+    });
+    g.appendChild(svgEl('circle', {
+      'class': 'lb-row-btn-bg', cx: cx, cy: cy, r: r
+    }));
+    g.appendChild(svgEl('line', {
+      'class': 'lb-row-btn-h',
+      x1: cx - arm, y1: cy, x2: cx + arm, y2: cy
+    }));
+    g.appendChild(svgEl('line', {
+      'class': 'lb-row-btn-v',
+      x1: cx, y1: cy - arm, x2: cx, y2: cy + arm
+    }));
+    rowG.appendChild(g);
+    return g;
+  }
+
+  // Mount the breakdown button on every row of the Score chart. `cx` is
+  // derived from the SVG's viewBox so the buttons sit a fixed gutter from
+  // the right edge regardless of chart width.
+  function mountAllRowButtons() {
+    var scorePanel = document.querySelector('.lb-panel[data-panel="score"]');
+    if (!scorePanel) return [];
+    var svg = scorePanel.querySelector('svg.lb-chart');
+    if (!svg) return [];
+    var vb = (svg.getAttribute('viewBox') || '').split(/\s+/);
+    var vbWidth = parseFloat(vb[2]) || 1000;
+    var cx = vbWidth - 42; // 12 (radius) + 30 (gutter) from the right edge
+    var rows = svg.querySelectorAll('g.lb-row[data-model]');
+    var btns = [];
+    rows.forEach(function(rowG) {
+      var b = mountRowButton(rowG, cx);
+      if (b) btns.push(b);
+    });
+    return btns;
+  }
+
+  var rowButtons = mountAllRowButtons();
+
+  function renderDomainTable(model) {
+    var scores = MODEL_DOMAIN_SCORES[model] || [];
+    var avg = scores.length ? scores.reduce(function(a, b) { return a + b; }, 0) / scores.length : 0;
+    var heads = '<th class="col-avg">Avg</th>' +
+      DOMAIN_NAMES.map(function(n) { return '<th>' + esc(n) + '</th>'; }).join('');
+    var cells = '<td class="col-avg">' + avg.toFixed(2) + '</td>' +
+      scores.map(function(v, i) {
+        var isMax = Math.abs(v - DOMAIN_MAX[i]) < 0.005;
+        return '<td class="' + (isMax ? 'is-max' : '') + '">' + v.toFixed(2) + '</td>';
+      }).join('');
+    return (
+      '<div class="lb-domain-card">' +
+        '<div class="lb-domain-hd">' +
+          '<span>Per-Domain Score</span>' +
+          '<span class="who">\u00b7 ' + esc(model) + '</span>' +
+        '</div>' +
+        '<table class="lb-domain-table">' +
+          '<thead><tr>' + heads + '</tr></thead>' +
+          '<tbody><tr>' + cells + '</tr></tbody>' +
+        '</table>' +
+      '</div>'
+    );
+  }
+
+  function closeDomainPanel() {
+    if (!domainPanel) return;
+    rowButtons.forEach(function(b) { b.classList.remove('is-active'); });
+    domainPanel.classList.remove('is-open');
+    // Defer the inner DOM teardown until the CSS slide-out finishes so the
+    // user doesn't see content vanish before the panel collapses.
+    setTimeout(function() {
+      if (!domainPanel.classList.contains('is-open')) domainPanel.innerHTML = '';
+    }, 350);
+  }
+
+  function openDomainPanel(model, btn) {
+    if (!domainPanel) return;
+    rowButtons.forEach(function(b) {
+      b.classList.toggle('is-active', b === btn);
+    });
+    domainPanel.innerHTML = renderDomainTable(model);
+    domainPanel.classList.add('is-open');
+  }
+
+  rowButtons.forEach(function(btn) {
+    function activate() {
+      var model = btn.getAttribute('data-model');
+      if (btn.classList.contains('is-active')) closeDomainPanel();
+      else openDomainPanel(model, btn);
+    }
+    btn.addEventListener('click', activate);
+    btn.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); }
     });
   });
 
@@ -2010,40 +2334,34 @@
      block whenever you add or remove a rollout under static/manifest/data/. -->
 <script type="application/json" id="showcaseIndex">
 {
-  "id": "democase_selected_new",
+  "id": "showcase_collection",
   "name": "UI Showcase Collection",
-  "cover": "static/manifest/cover/1442.png",
+  "cover": "static/manifest/cover/task1.png",
   "packages": [
-    { "id": "题目-1442-doubao2.1-sample-1",                    "name": "_1442__doubao2.1__sample_1",                      "packageManifest": "static/manifest/data/题目-1442-doubao2.1-sample-1/manifest.json",                    "packageCover": "static/manifest/data/题目-1442-doubao2.1-sample-1/1.webp",                    "packageStepsCount": 351 },
-    { "id": "题目-1442-gemini3-flash-sample-1",                "name": "_1442__gemini3-flash__sample_1",                  "packageManifest": "static/manifest/data/题目-1442-gemini3-flash-sample-1/manifest.json",                "packageCover": "static/manifest/data/题目-1442-gemini3-flash-sample-1/1.webp",                "packageStepsCount": 92 },
-    { "id": "题目-1442-gemini3.1-pro-sample-1",                "name": "_1442__gemini3.1-pro__sample_1",                  "packageManifest": "static/manifest/data/题目-1442-gemini3.1-pro-sample-1/manifest.json",                "packageCover": "static/manifest/data/题目-1442-gemini3.1-pro-sample-1/1.webp",                "packageStepsCount": 154 },
-    { "id": "题目-1442-gpt5.4-sample-1",                       "name": "_1442__gpt5.4__sample_1",                         "packageManifest": "static/manifest/data/题目-1442-gpt5.4-sample-1/manifest.json",                       "packageCover": "static/manifest/data/题目-1442-gpt5.4-sample-1/1.webp",                       "packageStepsCount": 104 },
-    { "id": "题目-1442-gpt5.4-mini-sample-2",                  "name": "_1442__gpt5.4_mini__sample_2",                    "packageManifest": "static/manifest/data/题目-1442-gpt5.4-mini-sample-2/manifest.json",                  "packageCover": "static/manifest/data/题目-1442-gpt5.4-mini-sample-2/1.webp",                  "packageStepsCount": 104 },
-    { "id": "题目-1442-kimi-native-sample-1",                  "name": "_1442__kimi_native__sample_1",                    "packageManifest": "static/manifest/data/题目-1442-kimi-native-sample-1/manifest.json",                  "packageCover": "static/manifest/data/题目-1442-kimi-native-sample-1/1.webp",                  "packageStepsCount": 393 },
-    { "id": "题目-1799-doubao2.1-sample-1",                    "name": "_1799__doubao2.1__sample_1",                      "packageManifest": "static/manifest/data/题目-1799-doubao2.1-sample-1/manifest.json",                    "packageCover": "static/manifest/data/题目-1799-doubao2.1-sample-1/1.webp",                    "packageStepsCount": 186 },
-    { "id": "题目-1799-gemini3-flash-sample-1",                "name": "_1799__gemini3-flash__sample_1",                  "packageManifest": "static/manifest/data/题目-1799-gemini3-flash-sample-1/manifest.json",                "packageCover": "static/manifest/data/题目-1799-gemini3-flash-sample-1/1.webp",                "packageStepsCount": 172 },
-    { "id": "题目-1799-gemini3.1-pro-sample-1",                "name": "题目_1799__gemini3.1-pro__sample_1",              "packageManifest": "static/manifest/data/题目-1799-gemini3.1-pro-sample-1/manifest.json",                "packageCover": "static/manifest/data/题目-1799-gemini3.1-pro-sample-1/1.webp",                "packageStepsCount": 82 },
-    { "id": "题目-1799-gpt5.4-sample-1",                       "name": "题目_1799__gpt5.4__sample_1",                     "packageManifest": "static/manifest/data/题目-1799-gpt5.4-sample-1/manifest.json",                       "packageCover": "static/manifest/data/题目-1799-gpt5.4-sample-1/1.webp",                       "packageStepsCount": 21 },
-    { "id": "题目-1799-gpt5.4-mini-sample-3",                  "name": "题目_1799__gpt5.4_mini__sample_3",                "packageManifest": "static/manifest/data/题目-1799-gpt5.4-mini-sample-3/manifest.json",                  "packageCover": "static/manifest/data/题目-1799-gpt5.4-mini-sample-3/1.webp",                  "packageStepsCount": 35 },
-    { "id": "题目-1799-kimi-native-sample-3",                  "name": "题目_1799__kimi_native__sample_3",                "packageManifest": "static/manifest/data/题目-1799-kimi-native-sample-3/manifest.json",                  "packageCover": "static/manifest/data/题目-1799-kimi-native-sample-3/1.webp",                  "packageStepsCount": 75 },
-    { "id": "题目-1876-doubao2.1-sample-1",                    "name": "题目_1876__doubao2.1__sample_1",                  "packageManifest": "static/manifest/data/题目-1876-doubao2.1-sample-1/manifest.json",                    "packageCover": "static/manifest/data/题目-1876-doubao2.1-sample-1/1.webp",                    "packageStepsCount": 70 },
-    { "id": "题目-1876-gemini3-flash-sample-1",                "name": "题目_1876__gemini3-flash__sample_1",              "packageManifest": "static/manifest/data/题目-1876-gemini3-flash-sample-1/manifest.json",                "packageCover": "static/manifest/data/题目-1876-gemini3-flash-sample-1/1.webp",                "packageStepsCount": 67 },
-    { "id": "题目-1876-gemini3.1-pro-sample-2",                "name": "题目_1876__gemini3.1-pro__sample_2",              "packageManifest": "static/manifest/data/题目-1876-gemini3.1-pro-sample-2/manifest.json",                "packageCover": "static/manifest/data/题目-1876-gemini3.1-pro-sample-2/1.webp",                "packageStepsCount": 179 },
-    { "id": "题目-1876-gpt5.4-sample-1",                       "name": "题目_1876__gpt5.4__sample_1",                     "packageManifest": "static/manifest/data/题目-1876-gpt5.4-sample-1/manifest.json",                       "packageCover": "static/manifest/data/题目-1876-gpt5.4-sample-1/1.webp",                       "packageStepsCount": 6 },
-    { "id": "题目-1876-gpt5.4-mini-sample-3",                  "name": "题目_1876__gpt5.4_mini__sample_3",                "packageManifest": "static/manifest/data/题目-1876-gpt5.4-mini-sample-3/manifest.json",                  "packageCover": "static/manifest/data/题目-1876-gpt5.4-mini-sample-3/1.webp",                  "packageStepsCount": 57 },
-    { "id": "题目-1876-kimi-native-sample-1",                  "name": "题目_1876__kimi_native__sample_1",                "packageManifest": "static/manifest/data/题目-1876-kimi-native-sample-1/manifest.json",                  "packageCover": "static/manifest/data/题目-1876-kimi-native-sample-1/1.webp",                  "packageStepsCount": 93 },
-    { "id": "题目-591-doubao2.1-sample-1",                     "name": "题目_591__doubao2.1__sample_1",                   "packageManifest": "static/manifest/data/题目-591-doubao2.1-sample-1/manifest.json",                     "packageCover": "static/manifest/data/题目-591-doubao2.1-sample-1/1.webp",                     "packageStepsCount": 100 },
-    { "id": "题目-591-gemini3-flash-sample-1",                 "name": "题目_591__gemini3-flash__sample_1",               "packageManifest": "static/manifest/data/题目-591-gemini3-flash-sample-1/manifest.json",                 "packageCover": "static/manifest/data/题目-591-gemini3-flash-sample-1/1.webp",                 "packageStepsCount": 106 },
-    { "id": "题目-591-gemini3.1-pro-sample-1",                 "name": "题目_591__gemini3.1-pro__sample_1",               "packageManifest": "static/manifest/data/题目-591-gemini3.1-pro-sample-1/manifest.json",                 "packageCover": "static/manifest/data/题目-591-gemini3.1-pro-sample-1/1.webp",                 "packageStepsCount": 141 },
-    { "id": "题目-591-gpt5.4-sample-2",                        "name": "题目_591__gpt5.4__sample_2",                      "packageManifest": "static/manifest/data/题目-591-gpt5.4-sample-2/manifest.json",                        "packageCover": "static/manifest/data/题目-591-gpt5.4-sample-2/1.webp",                        "packageStepsCount": 57 },
-    { "id": "题目-591-gpt5.4-mini-sample-1",                   "name": "题目_591__gpt5.4_mini__sample_1",                 "packageManifest": "static/manifest/data/题目-591-gpt5.4-mini-sample-1/manifest.json",                   "packageCover": "static/manifest/data/题目-591-gpt5.4-mini-sample-1/1.webp",                   "packageStepsCount": 27 },
-    { "id": "题目-591-kimi-native-sample-1",                   "name": "题目_591__kimi_native__sample_1",                 "packageManifest": "static/manifest/data/题目-591-kimi-native-sample-1/manifest.json",                   "packageCover": "static/manifest/data/题目-591-kimi-native-sample-1/1.webp",                   "packageStepsCount": 107 },
-    { "id": "题目-recv8j7b-ugj-qeg-doubao2.1-sample-1",        "name": "题目_recv8J7bUgjQeg__doubao2.1__sample_1",        "packageManifest": "static/manifest/data/题目-recv8j7b-ugj-qeg-doubao2.1-sample-1/manifest.json",        "packageCover": "static/manifest/data/题目-recv8j7b-ugj-qeg-doubao2.1-sample-1/1.webp",        "packageStepsCount": 95 },
-    { "id": "题目-recv8j7b-ugj-qeg-gemini3-flash-sample-1",    "name": "题目_recv8J7bUgjQeg__gemini3-flash__sample_1",    "packageManifest": "static/manifest/data/题目-recv8j7b-ugj-qeg-gemini3-flash-sample-1/manifest.json",    "packageCover": "static/manifest/data/题目-recv8j7b-ugj-qeg-gemini3-flash-sample-1/1.webp",    "packageStepsCount": 79 },
-    { "id": "题目-recv8j7b-ugj-qeg-gemini3.1-pro-sample-1",    "name": "题目_recv8J7bUgjQeg__gemini3.1-pro__sample_1",    "packageManifest": "static/manifest/data/题目-recv8j7b-ugj-qeg-gemini3.1-pro-sample-1/manifest.json",    "packageCover": "static/manifest/data/题目-recv8j7b-ugj-qeg-gemini3.1-pro-sample-1/1.webp",    "packageStepsCount": 71 },
-    { "id": "题目-recv8j7b-ugj-qeg-gpt5.4-sample-1",           "name": "题目_recv8J7bUgjQeg__gpt5.4__sample_1",           "packageManifest": "static/manifest/data/题目-recv8j7b-ugj-qeg-gpt5.4-sample-1/manifest.json",           "packageCover": "static/manifest/data/题目-recv8j7b-ugj-qeg-gpt5.4-sample-1/1.webp",           "packageStepsCount": 17 },
-    { "id": "题目-recv8j7b-ugj-qeg-gpt5.4-mini-sample-1",      "name": "题目_recv8J7bUgjQeg__gpt5.4_mini__sample_1",      "packageManifest": "static/manifest/data/题目-recv8j7b-ugj-qeg-gpt5.4-mini-sample-1/manifest.json",      "packageCover": "static/manifest/data/题目-recv8j7b-ugj-qeg-gpt5.4-mini-sample-1/1.webp",      "packageStepsCount": 68 },
-    { "id": "题目-recv8j7b-ugj-qeg-kimi-native-sample-1",      "name": "题目_recv8J7bUgjQeg__kimi_native__sample_1",      "packageManifest": "static/manifest/data/题目-recv8j7b-ugj-qeg-kimi-native-sample-1/manifest.json",      "packageCover": "static/manifest/data/题目-recv8j7b-ugj-qeg-kimi-native-sample-1/1.webp",      "packageStepsCount": 66 }
+    { "id": "task1-doubao2.1-sample-1",         "name": "_task1__doubao2.1__sample_1",     "packageManifest": "static/manifest/data/task1-doubao2.1-sample-1/manifest.json",         "packageCover": "static/manifest/data/task1-doubao2.1-sample-1/1.webp",         "packageStepsCount": 186 },
+    { "id": "task1-gemini3-flash-sample-1",     "name": "_task1__gemini3-flash__sample_1", "packageManifest": "static/manifest/data/task1-gemini3-flash-sample-1/manifest.json",     "packageCover": "static/manifest/data/task1-gemini3-flash-sample-1/1.webp",     "packageStepsCount": 172 },
+    { "id": "task1-gemini3.1-pro-sample-1",     "name": "_task1__gemini3.1-pro__sample_1", "packageManifest": "static/manifest/data/task1-gemini3.1-pro-sample-1/manifest.json",     "packageCover": "static/manifest/data/task1-gemini3.1-pro-sample-1/1.webp",     "packageStepsCount": 82 },
+    { "id": "task1-gpt5.4-sample-1",            "name": "_task1__gpt5.4__sample_1",        "packageManifest": "static/manifest/data/task1-gpt5.4-sample-1/manifest.json",            "packageCover": "static/manifest/data/task1-gpt5.4-sample-1/1.webp",            "packageStepsCount": 21 },
+    { "id": "task1-gpt5.4-mini-sample-3",       "name": "_task1__gpt5.4_mini__sample_3",   "packageManifest": "static/manifest/data/task1-gpt5.4-mini-sample-3/manifest.json",       "packageCover": "static/manifest/data/task1-gpt5.4-mini-sample-3/1.webp",       "packageStepsCount": 35 },
+    { "id": "task1-kimi-native-sample-3",       "name": "_task1__kimi_native__sample_3",   "packageManifest": "static/manifest/data/task1-kimi-native-sample-3/manifest.json",       "packageCover": "static/manifest/data/task1-kimi-native-sample-3/1.webp",       "packageStepsCount": 75 },
+    { "id": "task2-doubao2.1-sample-1",         "name": "_task2__doubao2.1__sample_1",     "packageManifest": "static/manifest/data/task2-doubao2.1-sample-1/manifest.json",         "packageCover": "static/manifest/data/task2-doubao2.1-sample-1/1.webp",         "packageStepsCount": 70 },
+    { "id": "task2-gemini3-flash-sample-1",     "name": "_task2__gemini3-flash__sample_1", "packageManifest": "static/manifest/data/task2-gemini3-flash-sample-1/manifest.json",     "packageCover": "static/manifest/data/task2-gemini3-flash-sample-1/1.webp",     "packageStepsCount": 67 },
+    { "id": "task2-gemini3.1-pro-sample-2",     "name": "_task2__gemini3.1-pro__sample_2", "packageManifest": "static/manifest/data/task2-gemini3.1-pro-sample-2/manifest.json",     "packageCover": "static/manifest/data/task2-gemini3.1-pro-sample-2/1.webp",     "packageStepsCount": 179 },
+    { "id": "task2-gpt5.4-sample-1",            "name": "_task2__gpt5.4__sample_1",        "packageManifest": "static/manifest/data/task2-gpt5.4-sample-1/manifest.json",            "packageCover": "static/manifest/data/task2-gpt5.4-sample-1/1.webp",            "packageStepsCount": 6 },
+    { "id": "task2-gpt5.4-mini-sample-3",       "name": "_task2__gpt5.4_mini__sample_3",   "packageManifest": "static/manifest/data/task2-gpt5.4-mini-sample-3/manifest.json",       "packageCover": "static/manifest/data/task2-gpt5.4-mini-sample-3/1.webp",       "packageStepsCount": 57 },
+    { "id": "task2-kimi-native-sample-1",       "name": "_task2__kimi_native__sample_1",   "packageManifest": "static/manifest/data/task2-kimi-native-sample-1/manifest.json",       "packageCover": "static/manifest/data/task2-kimi-native-sample-1/1.webp",       "packageStepsCount": 93 },
+    { "id": "task3-doubao2.1-sample-1",         "name": "_task3__doubao2.1__sample_1",     "packageManifest": "static/manifest/data/task3-doubao2.1-sample-1/manifest.json",         "packageCover": "static/manifest/data/task3-doubao2.1-sample-1/1.webp",         "packageStepsCount": 100 },
+    { "id": "task3-gemini3-flash-sample-1",     "name": "_task3__gemini3-flash__sample_1", "packageManifest": "static/manifest/data/task3-gemini3-flash-sample-1/manifest.json",     "packageCover": "static/manifest/data/task3-gemini3-flash-sample-1/1.webp",     "packageStepsCount": 106 },
+    { "id": "task3-gemini3.1-pro-sample-1",     "name": "_task3__gemini3.1-pro__sample_1", "packageManifest": "static/manifest/data/task3-gemini3.1-pro-sample-1/manifest.json",     "packageCover": "static/manifest/data/task3-gemini3.1-pro-sample-1/1.webp",     "packageStepsCount": 141 },
+    { "id": "task3-gpt5.4-sample-2",            "name": "_task3__gpt5.4__sample_2",        "packageManifest": "static/manifest/data/task3-gpt5.4-sample-2/manifest.json",            "packageCover": "static/manifest/data/task3-gpt5.4-sample-2/1.webp",            "packageStepsCount": 57 },
+    { "id": "task3-gpt5.4-mini-sample-1",       "name": "_task3__gpt5.4_mini__sample_1",   "packageManifest": "static/manifest/data/task3-gpt5.4-mini-sample-1/manifest.json",       "packageCover": "static/manifest/data/task3-gpt5.4-mini-sample-1/1.webp",       "packageStepsCount": 27 },
+    { "id": "task3-kimi-native-sample-1",       "name": "_task3__kimi_native__sample_1",   "packageManifest": "static/manifest/data/task3-kimi-native-sample-1/manifest.json",       "packageCover": "static/manifest/data/task3-kimi-native-sample-1/1.webp",       "packageStepsCount": 107 },
+    { "id": "task4-doubao2.1-sample-1",         "name": "_task4__doubao2.1__sample_1",     "packageManifest": "static/manifest/data/task4-doubao2.1-sample-1/manifest.json",         "packageCover": "static/manifest/data/task4-doubao2.1-sample-1/1.webp",         "packageStepsCount": 95 },
+    { "id": "task4-gemini3-flash-sample-1",     "name": "_task4__gemini3-flash__sample_1", "packageManifest": "static/manifest/data/task4-gemini3-flash-sample-1/manifest.json",     "packageCover": "static/manifest/data/task4-gemini3-flash-sample-1/1.webp",     "packageStepsCount": 79 },
+    { "id": "task4-gemini3.1-pro-sample-1",     "name": "_task4__gemini3.1-pro__sample_1", "packageManifest": "static/manifest/data/task4-gemini3.1-pro-sample-1/manifest.json",     "packageCover": "static/manifest/data/task4-gemini3.1-pro-sample-1/1.webp",     "packageStepsCount": 71 },
+    { "id": "task4-gpt5.4-sample-1",            "name": "_task4__gpt5.4__sample_1",        "packageManifest": "static/manifest/data/task4-gpt5.4-sample-1/manifest.json",            "packageCover": "static/manifest/data/task4-gpt5.4-sample-1/1.webp",            "packageStepsCount": 17 },
+    { "id": "task4-gpt5.4-mini-sample-1",       "name": "_task4__gpt5.4_mini__sample_1",   "packageManifest": "static/manifest/data/task4-gpt5.4-mini-sample-1/manifest.json",       "packageCover": "static/manifest/data/task4-gpt5.4-mini-sample-1/1.webp",       "packageStepsCount": 68 },
+    { "id": "task4-kimi-native-sample-1",       "name": "_task4__kimi_native__sample_1",   "packageManifest": "static/manifest/data/task4-kimi-native-sample-1/manifest.json",       "packageCover": "static/manifest/data/task4-kimi-native-sample-1/1.webp",       "packageStepsCount": 66 }
   ]
 }
 </script>
@@ -2127,8 +2445,8 @@
       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
-  // Parse a package "name" like "_1442__doubao2.1__sample_1" or
-  // "题目_1799__gpt5.4_mini__sample_1" into { taskId, model, sample }.
+  // Parse a package "name" like "_task1__doubao2.1__sample_1" into
+  // { taskId, model, sample }. taskId is the abstract slug "task1"..."task4".
   function parseName(name) {
     var s = String(name).replace(/^题目/, '');
     var parts = s.split('__').filter(Boolean);
@@ -2156,26 +2474,42 @@
     'gpt5.4', 'gpt5.4_mini', 'gemini3-flash'
   ];
 
-  // English prompt for each showcased task, shown in the bottom-left panel of
-  // the replayer modal. Keyed by the same taskId that parseName() extracts
-  // from package names (e.g. "1442", "recv8J7bUgjQeg"). If a task isn't found
-  // here, the prompt panel falls back to a "no prompt available" message.
+  // Human-readable label shown in the replayer modal header. The keys are
+  // the abstract task slugs that parseName() extracts ("task1" .. "task4").
+  var TASK_LABELS = {
+    'task1': 'Task 1',
+    'task2': 'Task 2',
+    'task3': 'Task 3',
+    'task4': 'Task 4'
+  };
+  function taskLabel(id) { return TASK_LABELS[id] || ('Task ' + id); }
+
+  // Short English title for each task — displayed on the showcase grid cell
+  // and at the top of the replayer's prompt panel. Lu\u2082O\u2083 uses the
+  // Unicode subscript code points so the chemical formula renders correctly.
+  var TASK_TITLES = {
+    'task1': 'Guide to Creating and Exporting Animal Vocabulary Flashcards Using Anki',
+    'task2': 'Simulation and Data Export of Temperature Step Response in First-Order Thermal System',
+    'task3': 'Construct a 25% Er-doped cubic phase Lu\u2082O\u2083 crystal structure using VESTA and export the CIF file',
+    'task4': 'Logistic Regression Analysis Based on the Titanic Dataset: A Survival Prediction Study with AUC as the Core Indicator'
+  };
+
+  // Long-form English prompt for each showcased task, shown in the bottom-left
+  // panel of the replayer modal. If a task isn't found here, the prompt panel
+  // falls back to a "no prompt available" message.
   var TASK_PROMPTS = {
-    '1442': 'A student majoring in Electrical Engineering and Automation wants to use OpenPLC Editor to write a basic start-stop control program for a conveyor motor. Please guide me to create a project named Case1_Motor, save it to /home/user/Desktop/output/Case1_Motor, and create a new Main program with LD as the language. Also, help me define three BOOL variables: Start_PB, Stop_PB, and Motor. Then, build the classic start-stop circuit in the ladder diagram, including the left busbar, normally open start contact, normally closed stop contact, Motor coil, right busbar, and the Motor self-locking contact connected in parallel across the start contact. Finally, explain how to simulate and observe whether the motor operating status is correct by operating the start and stop contacts.',
-    '1799': 'I now want to use Anki 23.12.1-linux-qt6 to complete an English word learning task. Please guide me through the operations: First, create a new Profile named "animal" and use the images monkey.png, dog.png, cat.png, bird.png, and rat.png from the folder /home/user/Desktop/input/animal. Then, create a new deck named "zoo", select "Basic (type in the answer)" as the card type, and fill in "zoo" in the Tags. Next, help me create 5 question-and-answer cards, using the corresponding images respectively, with the Back content filled in as monkey, dog, cat, bird, and rat in sequence. After the creation is completed, please guide me to complete a study session in the order of monkey, dog, cat, bird, rat. Finally, export the deck as Notes in Plain Text (.txt) format, select "zoo" for Include, check Include deck name, Include notetype name, and Include unique identifier, and save the file to /home/user/Desktop/output/zoo.txt.',
-    '1876': 'I am a thermal simulation engineer and would like to build a first-order thermal system model in OMEdit to verify its functionality. I need your guidance to complete this. The model is named Case03_ThermalStep and requires the use of components such as HeatCapacitor, ThermalConductor, PrescribedTemperature, and Step. The parameters are set as C=10 and G=1, with the initial temperature of the heat capacitor set to 293.15. The ambient temperature is simulated using a step signal, which increases by 10K at the 5th second, corresponding to Step.height=10 and Step.startTime=5. Please help me set the simulation time to 20 seconds, run the simulation, and finally export the temperature vs. time curve data as OpenModelica_Case03_Temperature.csv, saving it to /home/user/Desktop/output/OpenModelica_Case03_Temperature.csv.',
-    '591': 'Construct a cubic phase Lu\u2082O\u2083 crystal structure using VESTA, with Er doping at the Lu1 site. The space group is No. 206 Ia-3, and the lattice parameters are a = b = c = 10.365, \u03b1 = \u03b2 = \u03b3 = 90\u00b0. The atomic coordinates are as follows: Lu1 (0, 0.25, 0.467) with an occupancy of 0.75; Lu2 (0.25, 0.25, 0.25); O (0.10870, 0.15250, 0.61970). Additionally, add an Er atom at the Lu1 site (0, 0.25, 0.467) with an occupancy of 0.25, corresponding to 25% Er doping. Set the Max. length of Bonds to 2.6 in terms of bond length. Finally, export the structure as Lu2O3-Er.cif and save it to /home/user/Desktop/output/Lu2O3-Er.cif.',
-    'recv8J7bUgjQeg': 'I have an assignment for you: perform a complete logistic regression analysis on the Titanic dataset using jamovi. The data file is located at /home/user/Desktop/input/Titanic.csv. The outcome variable is Survived (0 = perished, 1 = survived), and the predictor variables are Pclass, Sex, Age, SibSp, Parch, Fare, and Embarked. In terms of the process, first, go to Exploration \u2192 Descriptives and check Frequency tables for data exploration. Then, navigate to the Data tab, use compute to create a new variable FamilySize with the formula SibSp + Parch + 1. Next, in Regression \u2192 Logistic Regression under 2 Outcomes Binomial, for Model Fit, check Nagelkerke R\u00b2 and BIC; for Prediction, check Specificity, Sensitivity, Classification table, ROC curve, and AUC. Finally, submit the model\'s AUC value as the core indicator of prediction accuracy to me.'
+    'task1': 'I now want to use Anki 23.12.1-linux-qt6 to complete an English word learning task. Please guide me through the operations: First, create a new Profile named "animal" and use the images monkey.png, dog.png, cat.png, bird.png, and rat.png from the folder /home/user/Desktop/input/animal. Then, create a new deck named "zoo", select "Basic (type in the answer)" as the card type, and fill in "zoo" in the Tags. Next, help me create 5 question-and-answer cards, using the corresponding images respectively, with the Back content filled in as monkey, dog, cat, bird, and rat in sequence. After the creation is completed, please guide me to complete a study session in the order of monkey, dog, cat, bird, rat. Finally, export the deck as Notes in Plain Text (.txt) format, select "zoo" for Include, check Include deck name, Include notetype name, and Include unique identifier, and save the file to /home/user/Desktop/output/zoo.txt.',
+    'task2': 'I am a thermal simulation engineer and would like to build a first-order thermal system model in OMEdit to verify its functionality. I need your guidance to complete this. The model is named Case03_ThermalStep and requires the use of components such as HeatCapacitor, ThermalConductor, PrescribedTemperature, and Step. The parameters are set as C=10 and G=1, with the initial temperature of the heat capacitor set to 293.15. The ambient temperature is simulated using a step signal, which increases by 10K at the 5th second, corresponding to Step.height=10 and Step.startTime=5. Please help me set the simulation time to 20 seconds, run the simulation, and finally export the temperature vs. time curve data as OpenModelica_Case03_Temperature.csv, saving it to /home/user/Desktop/output/OpenModelica_Case03_Temperature.csv.',
+    'task3': 'Construct a cubic phase Lu\u2082O\u2083 crystal structure using VESTA, with Er doping at the Lu1 site. The space group is No. 206 Ia-3, and the lattice parameters are a = b = c = 10.365, \u03b1 = \u03b2 = \u03b3 = 90\u00b0. The atomic coordinates are as follows: Lu1 (0, 0.25, 0.467) with an occupancy of 0.75; Lu2 (0.25, 0.25, 0.25); O (0.10870, 0.15250, 0.61970). Additionally, add an Er atom at the Lu1 site (0, 0.25, 0.467) with an occupancy of 0.25, corresponding to 25% Er doping. Set the Max. length of Bonds to 2.6 in terms of bond length. Finally, export the structure as Lu2O3-Er.cif and save it to /home/user/Desktop/output/Lu2O3-Er.cif.',
+    'task4': 'I have an assignment for you: perform a complete logistic regression analysis on the Titanic dataset using jamovi. The data file is located at /home/user/Desktop/input/Titanic.csv. The outcome variable is Survived (0 = perished, 1 = survived), and the predictor variables are Pclass, Sex, Age, SibSp, Parch, Fare, and Embarked. In terms of the process, first, go to Exploration \u2192 Descriptives and check Frequency tables for data exploration. Then, navigate to the Data tab, use compute to create a new variable FamilySize with the formula SibSp + Parch + 1. Next, in Regression \u2192 Logistic Regression under 2 Outcomes Binomial, for Model Fit, check Nagelkerke R\u00b2 and BIC; for Prediction, check Specificity, Sensitivity, Classification table, ROC curve, and AUC. Finally, submit the model\'s AUC value as the core indicator of prediction accuracy to me.'
   };
 
   var allPackages = [];
   var byTask = {};      // { taskId: [pkg, pkg, ...] }, ordered by MODEL_ORDER
   var taskOrder = [];   // ordered list of task IDs as they appear in the index
 
-  // Per-task cover lives at static/manifest/cover/<taskId>.png. The taskId is
-  // whatever parseName() extracts from the package name (digits like "1442",
-  // or symbolic like "recv8J7bUgjQeg" — both have matching files in the
-  // cover/ directory).
+  // Per-task cover lives at static/manifest/cover/<taskId>.png where taskId is
+  // the abstract slug ("task1" .. "task4") that parseName() extracts.
   function coverFor(taskId) {
     return 'static/manifest/cover/' + encodeURIComponent(taskId) + '.png';
   }
@@ -2196,10 +2530,11 @@
       return;
     }
     grid.innerHTML = taskOrder.map(function(taskId) {
-      return '<div class="showcase-cell" data-task="' + esc(taskId) + '">' +
-          '<img class="thumb" loading="lazy" src="' + esc(coverFor(taskId)) + '" alt="task ' + esc(taskId) + '" />' +
+      var title = TASK_TITLES[taskId] || taskLabel(taskId);
+      return '<div class="showcase-cell" data-task="' + esc(taskId) + '" title="' + esc(title) + '">' +
+          '<img class="thumb" loading="lazy" src="' + esc(coverFor(taskId)) + '" alt="' + esc(title) + '" />' +
           '<div class="meta">' +
-            '<div class="title">#' + esc(taskId) + '</div>' +
+            '<div class="title">' + esc(title) + '</div>' +
           '</div>' +
         '</div>';
     }).join('');
@@ -2431,7 +2766,7 @@
   // managed by openReplayer()/selectModel().
   function loadReplay(pkg) {
     curModel = pkg.meta.model || '';
-    elTitle.textContent = 'Task ' + pkg.meta.taskId + ' \u00B7 ' + modelLabel(pkg.meta.model);
+    elTitle.textContent = taskLabel(pkg.meta.taskId) + ' \u00B7 ' + modelLabel(pkg.meta.model);
     elSub.textContent = (pkg.packageStepsCount || 0) + ' steps' + (pkg.meta.sample ? ' \u00B7 sample ' + pkg.meta.sample : '');
     elLoading.style.display = 'flex';
     steps = []; cur = 0; setPlaying(false); setView('ui');
@@ -2460,10 +2795,12 @@
 
   function renderPrompt(taskId) {
     var p = TASK_PROMPTS[taskId];
+    var title = TASK_TITLES[taskId];
+    var titleHtml = title ? '<div class="rp-prompt-title">' + esc(title) + '</div>' : '';
     if (p) {
-      elPrompt.innerHTML = '<h3>Prompt</h3><div class="body">' + esc(p) + '</div>';
+      elPrompt.innerHTML = '<h3>Prompt</h3>' + titleHtml + '<div class="body">' + esc(p) + '</div>';
     } else {
-      elPrompt.innerHTML = '<h3>Prompt</h3><div class="empty">No prompt available for this task.</div>';
+      elPrompt.innerHTML = '<h3>Prompt</h3>' + titleHtml + '<div class="empty">No prompt available for this task.</div>';
     }
     elPrompt.scrollTop = 0;
   }
