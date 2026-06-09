@@ -846,70 +846,219 @@
       opacity: 0;
     }
     .lb-domain-panel.is-open {
-      max-height: 220px;
-      margin-top: 14px;
+      max-height: 520px;
+      margin-top: 16px;
       opacity: 1;
     }
+    /* === Per-model breakdown card === */
     .lb-domain-card {
-      border: 1px solid #e4e8eb;
-      border-radius: 12px;
-      background: #fbfcfb;
-      padding: 12px 14px 14px;
-      overflow-x: auto;
+      border: 1px solid #e1e7e3;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #fcfdfc 0%, #f7faf8 100%);
+      padding: 18px 20px 20px;
+      box-shadow: 0 1px 2px rgba(15, 41, 55, 0.03);
     }
-    .lb-domain-card .lb-domain-hd {
+    /* Header row: PER-MODEL BREAKDOWN label + model name on the left, KPI
+       tiles (Avg Pass + Pass@3) on the right. */
+    .lb-card-head {
       display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 8px;
-      color: #5a6675;
-      font-size: 0.78rem;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #ecf1ee;
+    }
+    .lb-card-title { display: flex; flex-direction: column; gap: 3px; }
+    .lb-card-label {
+      font-size: 0.7rem;
       font-weight: 700;
-      letter-spacing: 0.4px;
+      letter-spacing: 0.55px;
+      color: #6f7a87;
       text-transform: uppercase;
     }
-    .lb-domain-card .lb-domain-hd .who {
+    .lb-card-model {
+      font-size: 1.18rem;
+      font-weight: 800;
       color: #1f8a5f;
-      text-transform: none;
-      font-size: 0.92rem;
-      letter-spacing: 0;
-    }
-    .lb-domain-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.82rem;
-      font-variant-numeric: tabular-nums;
-      table-layout: fixed;
-    }
-    .lb-domain-table th,
-    .lb-domain-table td {
-      padding: 8px 6px;
-      text-align: center;
-      border-bottom: 1px solid #eef1f4;
-    }
-    .lb-domain-table thead th {
-      color: #5a6675;
-      font-weight: 700;
-      font-size: 0.72rem;
       letter-spacing: 0.2px;
-      line-height: 1.25;
-      border-bottom: 1.5px solid #d9dde2;
-      white-space: normal;
     }
-    .lb-domain-table tbody td {
-      color: #2e3c50;
-      font-weight: 600;
-      border-bottom: 0;
+    .lb-kpi-strip { display: flex; gap: 10px; }
+    .lb-kpi {
+      min-width: 108px;
+      padding: 8px 14px 9px;
+      border-radius: 10px;
+      background: #ffffff;
+      border: 1px solid #e4ece8;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
     }
-    .lb-domain-table th.col-avg,
-    .lb-domain-table td.col-avg {
-      background: #f3f8f5;
-      border-right: 1px solid #e4e8eb;
+    .lb-kpi.is-max {
+      background: linear-gradient(135deg, #ecf8f0 0%, #d8efe2 100%);
+      border-color: #b6dec6;
+    }
+    .lb-kpi-label {
+      font-size: 0.66rem;
+      font-weight: 700;
+      letter-spacing: 0.45px;
+      color: #6a7681;
+      text-transform: uppercase;
+    }
+    .lb-kpi-value {
+      font-size: 1.45rem;
       font-weight: 800;
+      color: #14304a;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.05;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
-    .lb-domain-table td.is-max {
-      color: #1f8a5f;
+    .lb-kpi.is-max .lb-kpi-value { color: #1f8a5f; }
+    /* Section: small uppercase title above each stat strip. */
+    .lb-section { margin-top: 14px; }
+    .lb-section-h {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #6f7a87;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    /* Per-domain stat grid: 6 tiles in a row on wide screens, collapses to 3
+       then 2 columns on narrower viewports. Each tile carries a domain
+       label, a value, and a small progress bar showing the value's position
+       relative to the dataset-wide maximum. */
+    .lb-tile-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .lb-tile {
+      border-radius: 10px;
+      background: #ffffff;
+      border: 1px solid #e8edea;
+      padding: 9px 10px 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .lb-tile:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(15, 41, 55, 0.08);
+    }
+    .lb-tile.is-max {
+      background: linear-gradient(135deg, #f1faf4 0%, #e3f3ea 100%);
+      border-color: #c4e3cf;
+    }
+    .lb-tile-label {
+      font-size: 0.66rem;
+      font-weight: 700;
+      letter-spacing: 0.25px;
+      color: #6a7681;
+      text-transform: uppercase;
+      line-height: 1.3;
+      min-height: 2.6em;
+    }
+    .lb-tile-value {
+      font-size: 1rem;
       font-weight: 800;
+      color: #14304a;
+      font-variant-numeric: tabular-nums;
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+    .lb-tile.is-max .lb-tile-value { color: #1f8a5f; }
+    .lb-tile-bar {
+      position: relative;
+      height: 4px;
+      background: #eef1f4;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .lb-tile-bar span {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, #a5d0b4, #6fb990);
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+    .lb-tile.is-max .lb-tile-bar span {
+      background: linear-gradient(90deg, #2f8a57, #1f8a5f);
+    }
+    /* Difficulty chips: pill-shaped, left-aligned. Each chip carries a small
+       colored dot (green/amber/red) for Easy/Medium/Hard. */
+    .lb-chip-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .lb-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px 8px 14px;
+      border-radius: 999px;
+      background: #ffffff;
+      border: 1px solid #e8edea;
+      min-width: 132px;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .lb-chip:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(15, 41, 55, 0.08);
+    }
+    .lb-chip.is-max {
+      background: linear-gradient(135deg, #f1faf4 0%, #e3f3ea 100%);
+      border-color: #c4e3cf;
+    }
+    .lb-chip-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.45px;
+      color: #6a7681;
+      text-transform: uppercase;
+      position: relative;
+      padding-left: 14px;
+    }
+    .lb-chip-label::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      transform: translateY(-50%);
+      background: #9aa6b8;
+    }
+    .lb-chip--easy   .lb-chip-label::before { background: #2f8a57; }
+    .lb-chip--medium .lb-chip-label::before { background: #d6a13b; }
+    .lb-chip--hard   .lb-chip-label::before { background: #c45656; }
+    .lb-chip-value {
+      font-size: 1.02rem;
+      font-weight: 800;
+      color: #14304a;
+      font-variant-numeric: tabular-nums;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .lb-chip.is-max .lb-chip-value { color: #1f8a5f; }
+    /* Column-leader star marker (used by KPI / tile / chip). */
+    .lb-best {
+      color: #d4a92a;
+      font-size: 0.78em;
+      line-height: 1;
+    }
+    /* Responsive: stack the header on narrow widths and shrink the tile
+       grid to 3 then 2 columns. */
+    @media (max-width: 900px) {
+      .lb-tile-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (max-width: 600px) {
+      .lb-card-head { flex-direction: column; gap: 12px; }
+      .lb-tile-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
     .lb-chart rect.bar {
@@ -1916,11 +2065,12 @@
           <text class="value-label" x="888" y="194">41.42</text>
         </g>
 
-        <!-- Row 3: Seed-2.0-Lite (Avg 18.54 / Pass@3 28.40) -->
+        <!-- Row 3: Seed-2.0-Lite (Avg 18.24 / Pass@3 28.40)
+             X-axis scale: 0 → x=180, 40 → x=855.6 ⇒ ~16.89 px / score-point. -->
         <g class="lb-row" data-model="Seed-2.0-Lite">
           <text class="axis-text" x="164" y="244" text-anchor="end">Seed-2.0-Lite</text>
-          <rect class="bar" x="180" y="218" width="313" height="18" rx="3" fill="#4a85c4"/>
-          <text class="value-label" x="501" y="232">18.54</text>
+          <rect class="bar" x="180" y="218" width="308" height="18" rx="3" fill="#4a85c4"/>
+          <text class="value-label" x="496" y="232">18.24</text>
           <rect class="bar" x="180" y="244" width="480" height="18" rx="3" fill="#b1c9e0"/>
           <text class="value-label" x="668" y="258">28.40</text>
         </g>
@@ -2134,11 +2284,11 @@
   });
 
   /* ---------- Per-model domain breakdown ---------- */
-  // Per-domain pass scores for each model. Column order matches the donut
-  // chart's primary categories (Scientific Computing / Data Analysis /
-  // Engineering & Design / Finance & Management / Geography & Environment /
-  // Multimedia & Creative); averaging the six values for any row reproduces
-  // that model's Avg Score within ~1 point.
+  // Per-domain pass rates (%). Column order matches the donut chart's primary
+  // categories (Scientific Computing / Data Analysis / Engineering & Design /
+  // Finance & Management / Geography & Environment / Multimedia & Creative).
+  // Values come from the "Domain Performance" table in the paper draft and
+  // are reordered here to align with DOMAIN_NAMES.
   var DOMAIN_NAMES = [
     'Scientific Computing',
     'Data Analysis',
@@ -2148,22 +2298,55 @@
     'Multimedia & Creative'
   ];
   var MODEL_DOMAIN_SCORES = {
-    'Gemini-3.1-Pro': [39.88, 24.44, 37.44, 27.93, 21.95, 31.97],
-    'Kimi-K2.6':      [45.24, 21.48, 32.82, 25.23, 27.64, 27.89],
-    'GPT-5.4':        [26.19, 10.37, 24.10, 17.12, 17.89, 14.29],
-    'GPT-5.4-Mini':   [19.05, 12.59, 20.00,  9.01, 17.07, 17.69],
-    'Seed-2.0-Lite':  [16.67, 10.74, 25.64, 18.02, 18.70, 25.85],
-    'Gemini-3-Flash': [10.12,  6.67,  9.23,  0.90,  8.94, 10.20]
+    'Gemini-3.1-Pro': [31.97, 39.88, 24.44, 37.44, 27.93, 21.95],
+    'Kimi-K2.6':      [27.89, 45.24, 21.48, 32.82, 25.23, 27.64],
+    'Seed-2.0-Lite':  [25.85, 16.07, 10.74, 24.62, 18.02, 18.70],
+    'GPT-5.4':        [14.29, 26.19, 10.37, 24.10, 17.12, 17.89],
+    'GPT-5.4-Mini':   [17.69, 19.05, 12.59, 20.00,  9.01, 17.07],
+    'Gemini-3-Flash': [10.20, 10.12,  6.67,  9.23,  0.90,  8.94]
   };
-  // Column-wise max so we can bold the best-in-domain cell, mirroring the
+  // Per-model overall stats from the leaderboard summary table. `avg` is the
+  // authoritative Avg Pass shown on the Score chart; `pass3` matches the
+  // lighter bar; easy/medium/hard expose the difficulty breakdown surfaced
+  // inside the per-model panel.
+  var MODEL_OVERALL_STATS = {
+    'Gemini-3.1-Pro': { avg: 30.67, pass3: 41.12, easy: 39.28, medium: 26.62, hard: 21.33 },
+    'Kimi-K2.6':      { avg: 29.68, pass3: 41.42, easy: 34.63, medium: 27.04, hard: 25.33 },
+    'Seed-2.0-Lite':  { avg: 18.24, pass3: 28.40, easy: 24.91, medium: 15.09, hard: 11.33 },
+    'GPT-5.4':        { avg: 17.85, pass3: 26.33, easy: 21.71, medium: 16.14, hard: 13.33 },
+    'GPT-5.4-Mini':   { avg: 15.98, pass3: 27.22, easy: 18.09, medium: 15.51, hard: 12.00 },
+    'Gemini-3-Flash': { avg:  7.89, pass3: 15.98, easy: 12.14, medium:  6.08, hard:  2.67 }
+  };
+  // Column-wise maxima so we can bold the best-in-column cell, mirroring the
   // \textbf{} marks in the user-supplied LaTeX source.
-  var DOMAIN_MAX = DOMAIN_NAMES.map(function(_, i) {
+  function columnMax(scoreFn) {
     var best = -Infinity;
     Object.keys(MODEL_DOMAIN_SCORES).forEach(function(m) {
-      if (MODEL_DOMAIN_SCORES[m][i] > best) best = MODEL_DOMAIN_SCORES[m][i];
+      var v = scoreFn(m);
+      if (typeof v === 'number' && v > best) best = v;
     });
     return best;
+  }
+  var DOMAIN_MAX = DOMAIN_NAMES.map(function(_, i) {
+    return columnMax(function(m) { return MODEL_DOMAIN_SCORES[m][i]; });
   });
+  var DIFFICULTY_KEYS = ['easy', 'medium', 'hard'];
+  var DIFFICULTY_LABELS = ['Easy', 'Medium', 'Hard'];
+  var PASS3_MAX = columnMax(function(m) {
+    return MODEL_OVERALL_STATS[m] && MODEL_OVERALL_STATS[m].pass3;
+  });
+  var AVG_MAX = columnMax(function(m) {
+    return MODEL_OVERALL_STATS[m] && MODEL_OVERALL_STATS[m].avg;
+  });
+  var DIFFICULTY_MAX = DIFFICULTY_KEYS.map(function(k) {
+    return columnMax(function(m) {
+      return MODEL_OVERALL_STATS[m] && MODEL_OVERALL_STATS[m][k];
+    });
+  });
+  // Dataset-wide max across all domain×model cells. Tile progress bars are
+  // scaled against this so the longest bar always equals the strongest score
+  // observed anywhere in the breakdown panel.
+  var DOMAIN_GLOBAL_MAX = Math.max.apply(null, DOMAIN_MAX);
 
   var domainPanel = document.getElementById('lbDomainPanel');
 
@@ -2251,26 +2434,95 @@
 
   var rowButtons = mountAllRowButtons();
 
+  // Tiny helper: returns true when `v` equals `max` within float-rounding
+  // tolerance (so values like 30.67 vs 30.67000001 still count as the max).
+  function isColMax(v, max) {
+    return typeof v === 'number' && typeof max === 'number'
+      && Math.abs(v - max) < 0.005;
+  }
+  // Star glyph injected next to the value when this cell is the column max.
+  // Caller is expected to wrap the cell with `is-max` so colouring + bg
+  // change come from CSS.
+  function starIf(cond) {
+    return cond
+      ? '<span class="lb-best" aria-label="Column leader">\u2605</span>'
+      : '';
+  }
+  // KPI tile builder (used for Avg Pass + Pass@3 in the header strip).
+  function renderKpi(label, value, max) {
+    var top = isColMax(value, max);
+    var inside = (typeof value === 'number')
+      ? value.toFixed(2) + starIf(top)
+      : '\u2014';
+    return (
+      '<div class="lb-kpi' + (top ? ' is-max' : '') + '">' +
+        '<div class="lb-kpi-label">' + esc(label) + '</div>' +
+        '<div class="lb-kpi-value">' + inside + '</div>' +
+      '</div>'
+    );
+  }
+
   function renderDomainTable(model) {
     var scores = MODEL_DOMAIN_SCORES[model] || [];
-    var avg = scores.length ? scores.reduce(function(a, b) { return a + b; }, 0) / scores.length : 0;
-    var heads = '<th class="col-avg">Avg</th>' +
-      DOMAIN_NAMES.map(function(n) { return '<th>' + esc(n) + '</th>'; }).join('');
-    var cells = '<td class="col-avg">' + avg.toFixed(2) + '</td>' +
-      scores.map(function(v, i) {
-        var isMax = Math.abs(v - DOMAIN_MAX[i]) < 0.005;
-        return '<td class="' + (isMax ? 'is-max' : '') + '">' + v.toFixed(2) + '</td>';
-      }).join('');
+    var stats = MODEL_OVERALL_STATS[model] || {};
+    // Authoritative Avg Pass when present, otherwise fall back to the
+    // arithmetic mean of the six domain values.
+    var avg = (typeof stats.avg === 'number')
+      ? stats.avg
+      : (scores.length
+          ? scores.reduce(function(a, b) { return a + b; }, 0) / scores.length
+          : null);
+
+    // --- Per-domain tiles ---
+    var tiles = DOMAIN_NAMES.map(function(name, i) {
+      var v = scores[i];
+      if (typeof v !== 'number') return '';
+      var top = isColMax(v, DOMAIN_MAX[i]);
+      var pct = DOMAIN_GLOBAL_MAX > 0
+        ? Math.max(2, Math.min(100, (v / DOMAIN_GLOBAL_MAX) * 100))
+        : 0;
+      return (
+        '<div class="lb-tile' + (top ? ' is-max' : '') + '">' +
+          '<div class="lb-tile-label">' + esc(name) + '</div>' +
+          '<div class="lb-tile-value">' + v.toFixed(2) + starIf(top) + '</div>' +
+          '<div class="lb-tile-bar"><span style="width:' + pct.toFixed(1) + '%"></span></div>' +
+        '</div>'
+      );
+    }).join('');
+
+    // --- Difficulty chips ---
+    var chips = DIFFICULTY_KEYS.map(function(k, i) {
+      var v = stats[k];
+      if (typeof v !== 'number') return '';
+      var top = isColMax(v, DIFFICULTY_MAX[i]);
+      return (
+        '<div class="lb-chip lb-chip--' + k + (top ? ' is-max' : '') + '">' +
+          '<span class="lb-chip-label">' + esc(DIFFICULTY_LABELS[i]) + '</span>' +
+          '<span class="lb-chip-value">' + v.toFixed(2) + starIf(top) + '</span>' +
+        '</div>'
+      );
+    }).join('');
+
     return (
       '<div class="lb-domain-card">' +
-        '<div class="lb-domain-hd">' +
-          '<span>Per-Domain Score</span>' +
-          '<span class="who">\u00b7 ' + esc(model) + '</span>' +
+        '<div class="lb-card-head">' +
+          '<div class="lb-card-title">' +
+            '<span class="lb-card-label">Per-Model Breakdown</span>' +
+            '<span class="lb-card-model">' + esc(model) + '</span>' +
+          '</div>' +
+          '<div class="lb-kpi-strip">' +
+            renderKpi('Avg Pass',  avg,        AVG_MAX) +
+            renderKpi('Pass@3',    stats.pass3, PASS3_MAX) +
+          '</div>' +
         '</div>' +
-        '<table class="lb-domain-table">' +
-          '<thead><tr>' + heads + '</tr></thead>' +
-          '<tbody><tr>' + cells + '</tr></tbody>' +
-        '</table>' +
+        '<div class="lb-section">' +
+          '<div class="lb-section-h">By Domain</div>' +
+          '<div class="lb-tile-grid">' + tiles + '</div>' +
+        '</div>' +
+        '<div class="lb-section">' +
+          '<div class="lb-section-h">By Difficulty</div>' +
+          '<div class="lb-chip-row">' + chips + '</div>' +
+        '</div>' +
       '</div>'
     );
   }
