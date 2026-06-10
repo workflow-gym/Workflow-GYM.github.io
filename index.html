@@ -290,6 +290,65 @@
       font-size: 1em;
     }
 
+    /* CTA row below the abstract bullets. Pill buttons with a dark fill so
+       they stay legible on top of the frosted-glass scrim. The Dataset
+       button is intentionally non-interactive while the data is unreleased
+       — visually slightly faded + cursor:not-allowed. */
+    .wfg-hero-cta {
+      margin: 26px auto 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+    .wfg-hero-cta .button {
+      font-family: 'Product Sans', 'Segoe UI', 'Helvetica Neue', sans-serif;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      padding-left: 18px;
+      padding-right: 18px;
+      background-color: #0f1626;
+      color: #fcfdfb;
+      border: none;
+      transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .wfg-hero-cta .button:hover {
+      background-color: #1e2a44;
+      color: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(15, 22, 38, 0.18);
+    }
+    /* Icon container is height-anchored (1.2em) and width-auto so wide
+       wordmark logos like arXiv keep their native aspect ratio, while
+       square logos (HuggingFace) still render at 1.2em × 1.2em. */
+    .wfg-hero-cta .button .icon {
+      width: auto;
+      height: 1.2em;
+      margin-right: 6px;
+    }
+    .wfg-hero-cta .button .icon i { font-size: 1.15em; }
+    .wfg-hero-cta .button .icon img {
+      height: 1.2em;
+      width: auto;
+      max-width: 4em;
+      display: block;
+    }
+    /* The arXiv wordmark uses dark gray + maroon — both lose contrast on
+       the dark pill. A subtle brightness lift keeps it legible without
+       distorting the brand colours. */
+    .wfg-hero-cta .button .icon .wfg-arxiv-logo {
+      filter: brightness(1.55) contrast(1.05);
+    }
+    .wfg-hero-cta .button[aria-disabled="true"] {
+      opacity: 0.78;
+      cursor: not-allowed;
+    }
+    .wfg-hero-cta .button[aria-disabled="true"]:hover {
+      background-color: #0f1626;
+      transform: none;
+      box-shadow: none;
+    }
+
     /* Override project's static/css/index.css legacy rule (.teaser uses 'Google Sans' which falls back to system sans-serif). Force Product Sans throughout. */
     .teaser, .teaser * {
       font-family: 'Product Sans', 'Segoe UI', 'Helvetica Neue', -apple-system, BlinkMacSystemFont, "Microsoft YaHei", Arial, sans-serif !important;
@@ -850,6 +909,68 @@
       margin-top: 16px;
       opacity: 1;
     }
+    /* === FAQ accordion === */
+    /* Native <details>/<summary>-based collapsible items. The list grows
+       vertically; the first item ships open by default via the [open]
+       attribute in HTML. */
+    .faq-list { display: flex; flex-direction: column; gap: 10px; }
+    .faq-item {
+      border: 1px solid #e4e8eb;
+      border-radius: 12px;
+      background: #fcfdfc;
+      overflow: hidden;
+      transition: box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+    .faq-item[open] {
+      border-color: #c4e3cf;
+      box-shadow: 0 2px 10px rgba(15, 41, 55, 0.05);
+    }
+    .faq-item > summary {
+      cursor: pointer;
+      list-style: none;
+      padding: 14px 18px;
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: #1f2a3a;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      transition: background 0.15s ease;
+    }
+    .faq-item > summary::-webkit-details-marker { display: none; }
+    .faq-item > summary::after {
+      content: '';
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-right: 2px solid #1f8a5f;
+      border-bottom: 2px solid #1f8a5f;
+      transform: rotate(45deg);
+      margin-right: 4px;
+      flex: 0 0 10px;
+      transition: transform 0.18s ease;
+    }
+    .faq-item[open] > summary::after { transform: rotate(-135deg); }
+    .faq-item > summary:hover { background: #f3f8f5; }
+    .faq-item > summary:focus-visible {
+      outline: 2px solid #1f8a5f;
+      outline-offset: -2px;
+    }
+    .faq-answer {
+      padding: 0 18px 16px;
+      color: #2e3c50;
+      font-size: 0.98rem;
+      line-height: 1.65;
+    }
+    .faq-answer p { margin: 4px 0 0; }
+    .faq-answer a {
+      color: #1f8a5f;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .faq-answer a:hover { color: #34b27d; }
+
     /* === Per-model breakdown card === */
     .lb-domain-card {
       border: 1px solid #e1e7e3;
@@ -1831,6 +1952,7 @@
         <a href="#stats">Data Statistics</a>
         <a href="#leaderboard">Leaderboard</a>
         <a href="#showcase">Showcase</a>
+        <a href="#faq">FAQ</a>
       </div>
     </div>
   </nav>
@@ -1858,32 +1980,33 @@
             <li>Our evaluation of SOTA models reveals that professional software workflows remain a major challenge: even the strongest models achieve only around 30% success rates. Through extensive analysis, we identify several key bottlenecks, including complex interface manipulation, long-horizon planning, professional software knowledge etc..</li>
             <li>Workflow-GYM provides a realistic testbed for studying the next generation of AI agents capable of performing economically valuable work in professional software environments.</li>
           </ul>
+          <div class="wfg-hero-cta">
+            <span class="link-block">
+              <a href="https://arxiv.org/pdf/2606.11042"
+                 target="_blank" rel="noopener"
+                 class="external-link button is-normal is-rounded is-dark">
+                <span class="icon">
+                  <img class="wfg-arxiv-logo"
+                       src="static/images/arxiv-logo-1.png"
+                       alt="arXiv"/>
+                </span>
+                <span>Paper Link</span>
+              </a>
+            </span>
+            <span class="link-block">
+              <a href="#" aria-disabled="true" tabindex="-1"
+                 class="external-link button is-normal is-rounded is-dark">
+                <span class="icon">
+                  <img src="static/images/hf-logo.svg" alt="HuggingFace logo"/>
+                </span>
+                <span>Dataset (Coming Soon)</span>
+              </a>
+            </span>
+          </div>
         </div>
       </div>
     </div>
   </section>
-
-  <!--
-    Buttons (Anonymous Code / Dataset) temporarily removed per user request.
-    Restore by uncommenting the block below.
-
-    <div class="has-text-centered" style="margin: 24px auto;">
-      <span class="link-block">
-        <a href="#" target="_blank" class="external-link button is-normal is-rounded is-dark">
-          <span class="icon"><i class="fab fa-github"></i></span>
-          <span>Anonymous Code (Coming Soon)</span>
-        </a>
-      </span>
-      <span class="link-block">
-        <a href="#" target="_blank" class="external-link button is-normal is-rounded is-dark">
-          <span class="icon">
-            <img src="static/images/hf-logo.svg" alt="icon" style="width:1.5em; height:1.5em; border:none;">
-          </span>
-          <span>Dataset (Coming Soon)</span>
-        </a>
-      </span>
-    </div>
-  -->
 
 
   <!-- Youtube video -->
@@ -3111,6 +3234,28 @@
 })();
 </script>
 <!-- End Show Case -->
+
+<!-- FAQ -->
+<section class="hero teaser" id="faq">
+  <div class="wfg-card">
+    <h2 class="cool-title title is-3 card-title">FAQ</h2>
+    <div class="faq-list">
+      <details class="faq-item" open>
+        <summary>How can I get my model's results onto the verified leaderboard?</summary>
+        <div class="faq-answer">
+          <p>
+            If you want your results to be verified and displayed on the verified leaderboard, you need to schedule a meeting with us
+            (<a href="mailto:zhangge.eli@bytedance.com">zhangge.eli@bytedance.com</a>,
+            <a href="mailto:zhuliya.julia@bytedance.com">zhuliya.julia@bytedance.com</a>,
+            <a href="mailto:dingjingzhe@bytedance.com">dingjingzhe@bytedance.com</a>)
+            to run your agent code on our side and have us report the results.
+          </p>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+<!-- End FAQ -->
 
 <!-- Task category donut chart (interactive replacement of task_distribution_01.png) -->
 <script>
