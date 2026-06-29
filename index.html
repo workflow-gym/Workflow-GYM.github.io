@@ -970,6 +970,50 @@
       text-underline-offset: 2px;
     }
     .faq-answer a:hover { color: #34b27d; }
+    .faq-model-test {
+      margin-top: 8px;
+      display: grid;
+      gap: 12px;
+    }
+    .faq-model-test .model-info-note {
+      margin: 0;
+      color: #2e3c50;
+    }
+    .model-info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+    }
+    .model-info-field,
+    .model-info-block {
+      border: 1px solid #d9eadf;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #fbfefc 0%, #f4faf6 100%);
+      padding: 12px 14px;
+    }
+    .model-info-label {
+      display: block;
+      margin-bottom: 4px;
+      color: #1f8a5f;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .model-info-field code,
+    .model-info-block code {
+      color: #1f5f45;
+      background: rgba(31, 138, 95, 0.08);
+      border: 1px solid rgba(31, 138, 95, 0.16);
+      border-radius: 8px;
+      padding: 2px 6px;
+      font-size: 0.92em;
+    }
+    .model-info-block code {
+      display: block;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
 
     /* === Per-model breakdown card === */
     .lb-domain-card {
@@ -3254,17 +3298,32 @@
       </details>
       <details class="faq-item">
         <summary>What information is needed to test a model on Workflow-Gym?</summary>
-        <div class="faq-answer">
-          <p>
-            To test a model on this dataset, please provide the following information:
-            <code>(base_url, api_key_env, model)</code>.
+        <div class="faq-answer faq-model-test">
+          <p class="model-info-note">
+            To test a model on this dataset, please provide these three fields:
           </p>
-          <p>
-            Format: <code>("https://api.xxx.com/v1", "XXX_API_KEY", "xxx")</code>
-          </p>
-          <p>
-            GPT example: <code>("https://api.openai.com/v1", "OPENAI_API_KEY", "gpt-5.4")</code>
-          </p>
+          <div class="model-info-grid" aria-label="Required model test fields">
+            <div class="model-info-field">
+              <span class="model-info-label">base_url</span>
+              <code>https://api.xxx.com/v1</code>
+            </div>
+            <div class="model-info-field">
+              <span class="model-info-label">api_key_env</span>
+              <code>XXX_API_KEY</code>
+            </div>
+            <div class="model-info-field">
+              <span class="model-info-label">model</span>
+              <code>xxx</code>
+            </div>
+          </div>
+          <div class="model-info-block">
+            <span class="model-info-label">Required format</span>
+            <code>("https://api.xxx.com/v1", "XXX_API_KEY", "xxx")</code>
+          </div>
+          <div class="model-info-block">
+            <span class="model-info-label">GPT example</span>
+            <code>("https://api.openai.com/v1", "OPENAI_API_KEY", "gpt-5.4")</code>
+          </div>
         </div>
       </details>
     </div>
