@@ -979,12 +979,6 @@
       margin: 0;
       color: #2e3c50;
     }
-    .model-info-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 10px;
-    }
-    .model-info-field,
     .model-info-block {
       border: 1px solid #d9eadf;
       border-radius: 12px;
@@ -1000,19 +994,33 @@
       letter-spacing: 0.04em;
       text-transform: uppercase;
     }
-    .model-info-field code,
-    .model-info-block code {
+    .model-info-lines {
+      display: grid;
+      gap: 4px;
+      margin: 0;
+      color: #1f5f45;
+    }
+    .model-info-lines div {
+      display: grid;
+      grid-template-columns: minmax(96px, max-content) 1fr;
+      gap: 8px;
+      align-items: baseline;
+    }
+    .model-info-lines dt {
+      font-weight: 700;
+      color: #1f8a5f;
+    }
+    .model-info-lines dd {
+      margin: 0;
+      overflow-wrap: anywhere;
+    }
+    .model-info-lines code {
       color: #1f5f45;
       background: rgba(31, 138, 95, 0.08);
       border: 1px solid rgba(31, 138, 95, 0.16);
       border-radius: 8px;
       padding: 2px 6px;
       font-size: 0.92em;
-    }
-    .model-info-block code {
-      display: block;
-      overflow-x: auto;
-      white-space: nowrap;
     }
 
     /* === Per-model breakdown card === */
@@ -3300,29 +3308,41 @@
         <summary>What information is needed to test a model on Workflow-Gym?</summary>
         <div class="faq-answer faq-model-test">
           <p class="model-info-note">
-            To test a model on this dataset, please provide these three fields:
+            Workflow-Gym uses the OpenAI-compatible API format. To test a model on this dataset, please provide:
           </p>
-          <div class="model-info-grid" aria-label="Required model test fields">
-            <div class="model-info-field">
-              <span class="model-info-label">base_url</span>
-              <code>https://api.xxx.com/v1</code>
-            </div>
-            <div class="model-info-field">
-              <span class="model-info-label">api_key_env</span>
-              <code>XXX_API_KEY</code>
-            </div>
-            <div class="model-info-field">
-              <span class="model-info-label">model</span>
-              <code>xxx</code>
-            </div>
+          <div class="model-info-block">
+            <span class="model-info-label">Required information</span>
+            <dl class="model-info-lines">
+              <div>
+                <dt>base_url:</dt>
+                <dd><code>https://api.xxx.com/v1</code></dd>
+              </div>
+              <div>
+                <dt>api_key_env:</dt>
+                <dd><code>XXX_API_KEY</code></dd>
+              </div>
+              <div>
+                <dt>model:</dt>
+                <dd><code>xxx</code></dd>
+              </div>
+            </dl>
           </div>
           <div class="model-info-block">
-            <span class="model-info-label">Required format</span>
-            <code>("https://api.xxx.com/v1", "XXX_API_KEY", "xxx")</code>
-          </div>
-          <div class="model-info-block">
-            <span class="model-info-label">GPT example</span>
-            <code>("https://api.openai.com/v1", "OPENAI_API_KEY", "gpt-5.4")</code>
+            <span class="model-info-label">Example</span>
+            <dl class="model-info-lines">
+              <div>
+                <dt>base_url:</dt>
+                <dd><code>https://api.openai.com/v1</code></dd>
+              </div>
+              <div>
+                <dt>api_key_env:</dt>
+                <dd><code>"sk_xxx"</code></dd>
+              </div>
+              <div>
+                <dt>model:</dt>
+                <dd><code>gpt-5.4</code></dd>
+              </div>
+            </dl>
           </div>
         </div>
       </details>
